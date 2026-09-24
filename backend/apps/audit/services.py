@@ -36,7 +36,9 @@ def record(
         last = AuditLog.objects.order_by("-id").only("hash").first()
         entry = AuditLog(
             actor=actor,
-            actor_label=getattr(actor, "email", "") if actor else "system",
+            # Pseudonymous: the user's UUID, never an email, so a GDPR erasure (delete the
+            # user row) severs the link without rewriting hash-chained history.
+            actor_label=str(actor.pk) if actor else "system",
             action=action,
             target_type=target_type,
             target_id=target_id,

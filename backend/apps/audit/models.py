@@ -29,7 +29,7 @@ class AuditLog(models.Model):
         related_name="+",
         db_constraint=False,
     )
-    actor_label = models.CharField(max_length=320, blank=True)  # survives user deletion
+    actor_label = models.CharField(max_length=320, blank=True)  # pseudonymous user id
     action = models.CharField(max_length=64, db_index=True)
     target_type = models.CharField(max_length=64, blank=True)
     target_id = models.CharField(max_length=64, blank=True, db_index=True)

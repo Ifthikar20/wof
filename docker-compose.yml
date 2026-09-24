@@ -10,6 +10,7 @@ x-backend: &backend
   read_only: true
   tmpfs: [/tmp]
   security_opt: ["no-new-privileges:true"]
+  cap_drop: [ALL]
 
 services:
   postgres:
@@ -82,6 +83,7 @@ services:
     read_only: true
     tmpfs: [/tmp, /app/.next/cache]
     security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
     ports: ["127.0.0.1:3000:3000"]
 
 volumes:

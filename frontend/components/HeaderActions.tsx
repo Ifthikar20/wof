@@ -31,6 +31,7 @@ export function HeaderActions() {
         <Link href="/verify" className="btn btn-ghost">I&apos;m a founder</Link>
       )}
       <Link href="/boards" className="btn btn-ghost">Saved</Link>
+      <Link href="/settings/security" className="btn btn-ghost hidden md:inline-flex">Security</Link>
       <button
         className="btn btn-ghost"
         onClick={async () => {

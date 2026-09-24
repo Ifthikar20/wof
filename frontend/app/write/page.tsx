@@ -40,6 +40,17 @@ export default function WritePage() {
     );
   }
 
+  if (me && me.is_verified_founder && !me.totp_enabled) {
+    // Publishing requires 2FA (REQUIRE_2FA_FOR_FOUNDERS); surface that up front.
+    return (
+      <div className="mx-auto max-w-lg py-16 text-center">
+        <h1 className="font-serif text-2xl font-bold">One more step: turn on 2FA</h1>
+        <p className="mt-2 text-muted">Founder accounts need two-factor authentication so nobody can publish in your name.</p>
+        <a href="/settings/security" className="btn btn-primary mt-6">Set up two-factor authentication</a>
+      </div>
+    );
+  }
+
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form, [k]: e.target.value });
 
   async function save(e: React.FormEvent) {
