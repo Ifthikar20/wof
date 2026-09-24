@@ -169,3 +169,4 @@ Never in git (enforced by gitleaks). Never in logs. Never in the frontend bundle
 | A founder may lie convincingly with a real company mailbox | Email + public evidence isn't proof of founding | Human review; community reports; revocation; add Companies House / SEC / registry lookups ⏳ |
 | Determined manual copying | Inherent to public content | Watermarks, ToS, DMCA takedowns |
 | Turnstile outage blocks signups | We fail closed deliberately | Status-page runbook |
+| The timed sign-up prompt can be bypassed (no JS, reading the HTML) | It is a conversion nudge, not an access control; content is public by design | Accepted; see [13](13-accounts-and-authentication.md). Members-only content would need API-side enforcement |

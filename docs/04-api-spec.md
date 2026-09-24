@@ -36,8 +36,8 @@ Base path: **`/api/v1`**, served on the same origin as the website (Next.js prox
 ## Founder verification: `/verification`
 | Method | Path | Who | Notes |
 |---|---|---|---|
-| GET | `/verification/` | user | my latest request or `null` |
-| POST | `/verification/` | user | `{company_name, company_domain, work_email, role_title, linkedin_url?, crunchbase_url?, notes?}` → 201; supersedes any open request; emails a token |
+| GET | `/verification` | user | my latest request or `null` |
+| POST | `/verification` | user | `{company_name, company_domain, work_email, role_title, linkedin_url?, crunchbase_url?, notes?}` → 201; supersedes any open request; emails a token |
 | POST | `/verification/confirm-email` | user (same one) | `{token}` → `under_review` |
 
 ## Stories

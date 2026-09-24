@@ -28,12 +28,23 @@ What we do differently, on purpose:
 | `/s/[slug]` | SSR, personalised when logged in | Story page, actions, integrity record, conversation |
 | `/f/[handle]` | SSR | Founder profile with company, verified-via domain, follow |
 | `/digest`, `/digest/[number]` | SSR | Subscribe + archive |
-| `/login`, `/signup` | Client | Auth (with TOTP step, Turnstile) |
+| `/login`, `/signup` | Client | Auth (with TOTP step, Turnstile); `/signup?intent=founder` is the founder path |
 | `/verify`, `/verify/confirm` | Client | Founder verification flow |
 | `/write` | Client | Founder editor (draft → publish), cover upload |
 | `/boards` | Client | Saved stories |
 | `/settings/security` | Client | TOTP 2FA setup (manual-entry key; required before a founder can publish) |
 | `/digest/confirm`, `/digest/unsubscribe` | Client | Token pages (token stripped from URL; unsubscribe needs a click) |
+
+## Auth prompt
+Logged-out visitors can read everything. After 45 s they get a dismissible prompt, and
+90 s after dismissing it a firm one (no close button; page blurred, `inert`, scroll-locked).
+It offers **Join as a reader**, **I'm a founder** (same account, then straight to `/verify`)
+and **Log in**. It never appears on auth, verification, settings or email-token pages, to
+logged-in users, or to crawlers. The visit clock lives in `sessionStorage`, so it survives
+navigation. It is a nudge, not a security control. Full behaviour:
+[13-accounts-and-authentication.md](13-accounts-and-authentication.md).
+
+`SessionProvider` fetches `/auth/me` once per page load and shares it with the header and the prompt.
 
 ## Architecture
 - **Next.js App Router**, TypeScript strict, Tailwind v4 with CSS-variable design tokens.

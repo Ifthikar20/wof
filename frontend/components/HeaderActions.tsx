@@ -1,16 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { api } from "@/lib/client-api";
-import type { Me } from "@/lib/types";
+import { useMe } from "./SessionProvider";
 
 export function HeaderActions() {
-  const [me, setMe] = useState<Me | null | undefined>(undefined);
-
-  useEffect(() => {
-    api<Me | null>("/auth/me").then(setMe).catch(() => setMe(null));
-  }, []);
+  const me = useMe();
 
   if (me === undefined) return <div className="h-12 w-24 shrink-0" />;
 

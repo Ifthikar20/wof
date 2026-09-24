@@ -28,7 +28,9 @@ def healthz(_request):
 
 api_v1 = [
     path("auth/", include("apps.accounts.urls")),
-    path("verification/", include("apps.verification.urls")),
+    # No trailing slashes anywhere: the Next.js /api proxy strips them, and Django's
+    # APPEND_SLASH redirect would then loop.
+    path("verification", include("apps.verification.urls")),
     path("", include("apps.stories.urls")),
     path("", include("apps.engagement.urls")),
     path("moderation/", include("apps.moderation.urls")),

@@ -3,9 +3,11 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import "./globals.css";
+import { AuthPrompt } from "@/components/AuthPrompt";
 import { HeaderActions } from "@/components/HeaderActions";
 import { HeaderNav } from "@/components/HeaderNav";
 import { SearchBar } from "@/components/SearchBar";
+import { SessionProvider } from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
   title: { default: "Wall of Founders", template: "%s · Wall of Founders" },
@@ -20,6 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="min-h-screen">
+        <SessionProvider>
         <header className="sticky top-0 z-20 bg-bg">
           <div className="mx-auto flex max-w-[1880px] items-center gap-2 px-4 py-2">
             <Link href="/" aria-label="Wall of Founders home" className="grid h-12 w-12 shrink-0 place-items-center rounded-full hover:bg-chip">
@@ -36,6 +39,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <footer className="mx-auto max-w-[1880px] px-4 py-10 text-center text-sm text-muted">
           Every story is written by a founder we verified by hand. Every edit is versioned and publicly hashed.
         </footer>
+        <AuthPrompt />
+        </SessionProvider>
       </body>
     </html>
   );

@@ -32,6 +32,7 @@ stories written by **verified founders**, plus a weekly email digest of the best
 | 10 | [Infrastructure & deployment](docs/10-infrastructure-and-deployment.md) | Reference cloud architecture, CI/CD, backups/DR, costs |
 | 11 | [Observability & operations](docs/11-observability-and-operations.md) | Logs, metrics, alerts, runbooks, key rotation |
 | 12 | [Roadmap](docs/12-roadmap.md) | What's done, beta, launch, community |
+| 13 | [Accounts & authentication](docs/13-accounts-and-authentication.md) | One account with earned founder status, login protections, the timed sign-up prompt |
 | ADR | [Architecture decisions](docs/adr/) | Django, sessions not JWT, Postgres, no AI, uploads, same-origin API, hash chains |
 
 ## Stack

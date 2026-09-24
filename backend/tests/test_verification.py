@@ -20,7 +20,7 @@ VALID = {
 
 
 def submit(client, **overrides):
-    return client.post("/api/v1/verification/", {**VALID, **overrides}, format="json")
+    return client.post("/api/v1/verification", {**VALID, **overrides}, format="json")
 
 
 def token_from_mail() -> str:

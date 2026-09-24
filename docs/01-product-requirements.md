@@ -14,7 +14,8 @@ Status legend: ✅ implemented in this repo · 🟡 partially implemented · ⏳
 | R-5 | Public edit history per story (revision numbers and hashes) | ✅ |
 | R-6 | Public digest archive | ✅ |
 | R-7 | Server-rendered pages with Open Graph metadata for sharing and SEO | ✅ |
-| R-8 | Full-text search | ⏳ (Postgres FTS first, see roadmap) |
+| R-8 | Search (title, subtitle, topic) | ✅ substring · full-text ⏳ |
+| R-9 | Timed sign-up prompt: soft after 45 s, then non-dismissible; exempt for auth pages and crawlers | ✅ ([13](13-accounts-and-authentication.md)) |
 
 ### Reader account
 | ID | Requirement | Status |

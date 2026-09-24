@@ -12,7 +12,7 @@ proofs and a human decision**. It is **never** self-declared and never automated
 
 ```mermaid
 stateDiagram-v2
-  [*] --> email_pending: POST /verification/ (validated)
+  [*] --> email_pending: POST /verification (validated)
   email_pending --> under_review: valid token within 24h (single use)
   email_pending --> withdrawn: user submits a new request
   under_review --> approved: moderator approves (reason logged)
@@ -31,7 +31,7 @@ stateDiagram-v2
   }
 ```
 
-## Step 1: Submit (`POST /api/v1/verification/`)
+## Step 1: Submit (`POST /api/v1/verification`)
 
 Server-side validation, in order ([serializers.py](../backend/apps/verification/serializers.py)):
 

@@ -114,3 +114,22 @@ def test_me_is_null_for_anonymous_and_patch_requires_login(client, db):
     res = client.get("/api/v1/auth/me")
     assert res.status_code == 200 and res.json() is None
     assert client.patch("/api/v1/auth/me", {"bio": "x"}, format="json").status_code == 403
+
+
+def test_no_api_route_ends_with_a_slash():
+    """The Next.js /api proxy strips trailing slashes; a slash-terminated Django route
+    would 301 back to itself through the proxy forever."""
+    from django.urls import get_resolver
+    from django.urls.resolvers import URLResolver
+
+    def walk(patterns, prefix=""):
+        for p in patterns:
+            route = prefix + str(p.pattern)
+            if isinstance(p, URLResolver):
+                yield from walk(p.url_patterns, route)
+            else:
+                yield route
+
+    api_routes = [r for r in walk(get_resolver().url_patterns) if r.startswith("api/")]
+    assert api_routes
+    assert [r for r in api_routes if r.endswith("/")] == []

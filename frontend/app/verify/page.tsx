@@ -21,7 +21,7 @@ export default function VerifyPage() {
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form, [k]: e.target.value });
 
   useEffect(() => {
-    api<Req | null>("/verification/").then(setCurrent).catch((err) => {
+    api<Req | null>("/verification").then(setCurrent).catch((err) => {
       if (err instanceof ApiException && err.status === 403) window.location.href = "/login?next=/verify";
       setCurrent(null);
     });
@@ -31,7 +31,7 @@ export default function VerifyPage() {
     e.preventDefault();
     setErrors({});
     try {
-      setCurrent(await api<Req>("/verification/", { method: "POST", body: form }));
+      setCurrent(await api<Req>("/verification", { method: "POST", body: form }));
     } catch (err) {
       const fe = fieldErrors(err);
       setErrors(Object.keys(fe).length ? fe : { form: err instanceof Error ? err.message : "Failed." });
