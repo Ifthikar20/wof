@@ -2,6 +2,7 @@
 
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
+import { ChangePassword } from "@/components/ChangePassword";
 import { useMe } from "@/components/SessionProvider";
 import { api } from "@/lib/client-api";
 import type { Me } from "@/lib/types";
@@ -95,6 +96,8 @@ export default function SecuritySettings() {
 
         {enabled && <p className="mt-4 text-sm">You&apos;ll be asked for a code each time you log in. Each code works only once.</p>}
       </section>
+
+      <ChangePassword />
 
       <section className="rounded-[24px] border border-line bg-surface/80 p-6 text-sm">
         <h2 className="text-lg font-semibold">How your account is protected</h2>

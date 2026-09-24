@@ -120,3 +120,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.failed_login_count = 0
             self.locked_until = None
             self.save(update_fields=["failed_login_count", "locked_until"])
+
+
+class RetiredHandle(models.Model):
+    """Handles of deleted accounts can never be registered again (no impersonating a
+    deleted founder). Only a SHA-256 of the handle is kept, not the handle itself."""
+
+    handle_hash = models.CharField(max_length=64, unique=True)
+    retired_at = models.DateTimeField(auto_now_add=True)

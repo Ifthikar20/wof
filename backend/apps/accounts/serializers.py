@@ -1,7 +1,9 @@
 from django.contrib.auth import password_validation
 from rest_framework import serializers
 
-from .models import RESERVED_HANDLES, User
+from apps.common.hashing import sha256_hex
+
+from .models import RESERVED_HANDLES, RetiredHandle, User
 
 
 class PublicUserSerializer(serializers.ModelSerializer):
@@ -54,7 +56,10 @@ class SignupSerializer(serializers.Serializer):
         User._meta.get_field("handle").run_validators(value)
         if value in RESERVED_HANDLES:
             raise serializers.ValidationError("This handle is reserved.")
-        if User.objects.filter(handle=value).exists():
+        if (
+            User.objects.filter(handle=value).exists()
+            or RetiredHandle.objects.filter(handle_hash=sha256_hex(value)).exists()
+        ):
             raise serializers.ValidationError("This handle is taken.")
         return value
 

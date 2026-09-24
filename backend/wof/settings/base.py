@@ -132,6 +132,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Query HaveIBeenPwned (k-anonymity range API) on signup / password change.
 PWNED_PASSWORDS_CHECK = env_bool("PWNED_PASSWORDS_CHECK", True)
 
+PASSWORD_RESET_TIMEOUT = 60 * 60  # reset links expire after 1 hour
 LOGIN_MAX_FAILURES = 5  # failures before temporary lockout kicks in
 LOGIN_LOCKOUT_MAX_MINUTES = 60
 REQUIRE_2FA_FOR_FOUNDERS = env_bool("REQUIRE_2FA_FOR_FOUNDERS", True)
@@ -198,6 +199,9 @@ REST_FRAMEWORK = {
         "subscribe": "5/hour",
         "upload": "30/hour",
         "write": "60/hour",
+        "password": "5/hour",
+        "export": "5/hour",
+        "webhook": "600/min",
     },
     "DEFAULT_PAGINATION_CLASS": "apps.common.pagination.FeedCursorPagination",
     "EXCEPTION_HANDLER": "apps.common.exceptions.api_exception_handler",
@@ -227,6 +231,15 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "Wall of Founders <hello@walloffo
 DIGEST_FROM_EMAIL = env(
     "DIGEST_FROM_EMAIL", "Wall of Founders Digest <digest@walloffounders.local>"
 )
+
+# Write-once (object-lock) bucket that receives the daily audit-chain head hash.
+AUDIT_ANCHOR_BUCKET = env("AUDIT_ANCHOR_BUCKET", "")
+
+# Email-provider webhook credentials (Basic auth). Empty => webhook disabled.
+EMAIL_WEBHOOK_USER = env("EMAIL_WEBHOOK_USER", "")
+EMAIL_WEBHOOK_PASSWORD = env("EMAIL_WEBHOOK_PASSWORD", "")
+# Postmark sends bulk mail on a separate "broadcast" stream from transactional mail.
+DIGEST_MESSAGE_STREAM = env("DIGEST_MESSAGE_STREAM", "")
 
 # --- Bot protection -------------------------------------------------------------------------
 TURNSTILE_SECRET_KEY = env("TURNSTILE_SECRET_KEY", "")  # empty => check disabled (dev only)

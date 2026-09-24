@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { api, ApiException } from "@/lib/client-api";
 import type { Me } from "@/lib/types";
@@ -54,6 +55,9 @@ export function LoginForm({ onSuccess, autoFocus = false }: { onSuccess: (me: Me
           <p className="text-xs text-muted">Enter the code from your authenticator app.</p>
         </>
       )}
+      <Link href="/forgot" className="-mt-1 w-fit text-sm font-semibold text-muted underline-offset-4 hover:text-ink hover:underline">
+        Forgot password?
+      </Link>
       {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
       <button className="btn btn-primary mt-1 h-12 w-full text-[15px]" disabled={busy}>
         {busy ? "Logging in…" : "Log in"}

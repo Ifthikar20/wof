@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
 
+from apps.verification import views as verification_views
+
 # Django admin is the moderation/editorial console. It requires a staff account whose
 # session passed TOTP at login (see accounts.views.LoginView); in production it is
 # additionally only reachable through Cloudflare Access (SSO + device posture).
@@ -30,7 +32,8 @@ api_v1 = [
     path("auth/", include("apps.accounts.urls")),
     # No trailing slashes anywhere: the Next.js /api proxy strips them, and Django's
     # APPEND_SLASH redirect would then loop.
-    path("verification", include("apps.verification.urls")),
+    path("verification", verification_views.MyVerificationView.as_view()),
+    path("verification/confirm-email", verification_views.ConfirmEmailView.as_view()),
     path("", include("apps.stories.urls")),
     path("", include("apps.engagement.urls")),
     path("moderation/", include("apps.moderation.urls")),

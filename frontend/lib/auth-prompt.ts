@@ -16,7 +16,7 @@ const KEY = "wof.authPrompt";
 let memoryState: PromptState | null = null; // fallback when sessionStorage is blocked
 
 /** Pages where the prompt would get in the way of completing sign-up or a token flow. */
-const EXEMPT_PATHS = [/^\/login/, /^\/signup/, /^\/verify/, /^\/settings/, /^\/digest\/confirm/, /^\/digest\/unsubscribe/];
+const EXEMPT_PATHS = [/^\/login/, /^\/signup/, /^\/forgot/, /^\/reset/, /^\/verify/, /^\/settings/, /^\/digest\/confirm/, /^\/digest\/unsubscribe/];
 
 /** Search-engine crawlers and link-preview bots always see the plain page. */
 const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|linkedin|slack|discord|whatsapp|telegram|embedly|preview/i;

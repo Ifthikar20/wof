@@ -35,3 +35,22 @@ def process_media(self, media_id: str) -> str:
     media.status = Media.Status.READY
     media.save()
     return media.status
+
+
+@shared_task(bind=True, max_retries=5, default_retry_delay=300)
+def delete_media_objects(self, keys: list[str]) -> int:
+    """Erase a deleted account's uploads from both buckets (best effort, retried)."""
+    from django.conf import settings
+
+    from .storage import _client
+
+    removed = 0
+    for key in keys:
+        bucket = settings.S3_PUBLIC_BUCKET if key.startswith("m/") else settings.S3_PRIVATE_BUCKET
+        try:
+            _client().delete_object(Bucket=bucket, Key=key)
+            removed += 1
+        except Exception as exc:
+            logger.warning("media delete failed for %s", key)
+            raise self.retry(exc=exc) from exc
+    return removed
