@@ -53,3 +53,35 @@ def test_database_rejects_raw_updates_on_postgres(reader):
     services.record("test.event", target=reader)
     with pytest.raises(DatabaseError), transaction.atomic():
         AuditLog.objects.update(action="rewritten")
+
+
+def test_nightly_task_anchors_head_hash(reader, settings, monkeypatch):
+    from apps.audit import tasks
+
+    calls = []
+
+    class FakeS3:
+        def put_object(self, **kw):
+            calls.append(kw)
+
+    monkeypatch.setattr("apps.stories.storage._client", lambda public=False: FakeS3())
+    settings.AUDIT_ANCHOR_BUCKET = "anchor-bucket"
+    services.record("test.event", target=reader)
+    result = tasks.verify_chain_task()
+    assert result["ok"] and result["anchored"].startswith("audit-head/")
+    assert calls[0]["Bucket"] == "anchor-bucket"
+    assert services.head_hash() in calls[0]["Body"].decode()
+
+
+def test_broken_chain_is_not_anchored(reader, settings, monkeypatch):
+    from apps.audit import tasks
+
+    settings.AUDIT_ANCHOR_BUCKET = "anchor-bucket"
+    monkeypatch.setattr(
+        "apps.stories.storage._client", lambda public=False: (_ for _ in ()).throw(AssertionError)
+    )
+    for i in range(2):
+        services.record("test.event", target=reader, metadata={"i": i})
+    with bypass_append_only():
+        AuditLog.objects.filter(pk=AuditLog.objects.order_by("id").first().pk).update(action="x")
+    assert tasks.verify_chain_task()["ok"] is False

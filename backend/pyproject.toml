@@ -13,7 +13,7 @@ select = ["E", "F", "W", "I", "B", "UP", "S", "DJ"]
 ignore = ["S101", "DJ008", "DJ012"]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S105", "S106"]
+"tests/*" = ["S105", "S106", "S107"]
 "wof/settings/*" = ["S105"]
 
 [tool.pytest.ini_options]

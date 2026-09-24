@@ -137,6 +137,11 @@ def send_issue(issue_id: int) -> int:
                 "List-Unsubscribe": f"<{unsub}>",
                 "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
                 "List-Id": "Wall of Founders Digest <digest.walloffounders>",
+                **(
+                    {"X-PM-Message-Stream": settings.DIGEST_MESSAGE_STREAM}
+                    if settings.DIGEST_MESSAGE_STREAM
+                    else {}
+                ),
             },
         )
         msg.attach_alternative(html, "text/html")
