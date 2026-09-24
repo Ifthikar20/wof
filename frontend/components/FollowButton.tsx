@@ -7,7 +7,7 @@ export function FollowButton({ handle }: { handle: string }) {
   const [following, setFollowing] = useState(false);
   return (
     <button
-      className={`btn ${following ? "btn-ghost" : "btn-primary"}`}
+      className={`btn ${following ? "btn-ghost" : "btn-primary"} min-w-28`}
       onClick={async () => {
         try {
           const res = await api<{ following: boolean }>(`/founders/${handle}/follow`, { method: following ? "DELETE" : "POST" });

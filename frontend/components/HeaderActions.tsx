@@ -38,8 +38,10 @@ export function HeaderActions() {
         <div className="absolute right-0 z-30 mt-2 w-60 rounded-2xl border border-line bg-surface p-2 shadow-[0_24px_60px_-20px_rgba(0,0,0,.35)]">
           <p className="truncate px-3 py-2 text-xs text-muted">{me.email}</p>
           <Link href={`/f/${me.handle}`} className="block rounded-xl px-3 py-2 font-semibold hover:bg-chip">Your profile</Link>
+          {me.is_verified_founder && <Link href="/studio" className="block rounded-xl px-3 py-2 font-semibold hover:bg-chip">Studio</Link>}
           <Link href="/boards" className="block rounded-xl px-3 py-2 font-semibold hover:bg-chip">Saved</Link>
-          <Link href="/settings/security" className="block rounded-xl px-3 py-2 font-semibold hover:bg-chip">Security</Link>
+          {me.role !== "reader" && <Link href="/moderation" className="block rounded-xl px-3 py-2 font-semibold hover:bg-chip">Moderation</Link>}
+          <Link href="/settings" className="block rounded-xl px-3 py-2 font-semibold hover:bg-chip">Settings</Link>
           <button
             className="block w-full rounded-xl px-3 py-2 text-left font-semibold hover:bg-chip"
             onClick={async () => {

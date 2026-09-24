@@ -75,7 +75,14 @@ def test_private_boards_are_private(client, reader, story, db):
         ).status_code
         == 201
     )
-    assert len(client.get(f"/api/v1/boards/{board['id']}").json()["stories"]) == 1
+    detail = client.get(f"/api/v1/boards/{board['id']}").json()
+    assert len(detail["stories"]) == 1
+    assert detail["is_owner"] is True and detail["owner"] == reader.handle
+    assert client.get("/api/v1/boards").json()[0]["preview"][0]["slug"] == story.slug
+    # public boards are visible to others, but they are not the owner
+    client.patch(f"/api/v1/boards/{board['id']}", {"is_private": False}, format="json")
+    assert type(client)().get(f"/api/v1/boards/{board['id']}").json()["is_owner"] is False
+    client.patch(f"/api/v1/boards/{board['id']}", {"is_private": True}, format="json")
 
     stranger = auth(type(client)(), make_user(email="s@example.org", handle="stranger"))
     assert stranger.get(f"/api/v1/boards/{board['id']}").status_code == 404
@@ -142,3 +149,20 @@ def test_suspension_ends_existing_sessions(db, story):
     user.save()
     assert c.get("/api/v1/auth/me").json() is None
     assert c.post(f"/api/v1/stories/{story.slug}/like").status_code == 403
+
+
+def test_report_queue_describes_the_target(client, reader, moderator, story):
+    auth(client, reader)
+    client.post(
+        "/api/v1/reports",
+        {"target_type": "story", "target_id": str(story.id), "reason": "spam"},
+        format="json",
+    )
+    mod = auth(type(client)(), moderator)
+    target = mod.get("/api/v1/moderation/reports").json()["results"][0]["target"]
+    assert target == {
+        "label": "Garage",
+        "url": "/s/garage-1",
+        "status": "published",
+        "author": story.author.handle,
+    }

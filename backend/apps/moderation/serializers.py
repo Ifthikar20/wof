@@ -1,3 +1,5 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
 from apps.engagement.models import Comment, Report
@@ -26,7 +28,44 @@ class ModReportSerializer(serializers.ModelSerializer):
             "details",
             "status",
             "created_at",
+            "target",
         ]
+
+    target = serializers.SerializerMethodField()
+
+    def get_target(self, obj):
+        """Human-readable summary of what was reported, so moderators needn't look up IDs."""
+        from apps.accounts.models import User
+        from apps.stories.models import Story
+
+        try:
+            if obj.target_type == Report.Target.STORY:
+                story = Story.objects.select_related("author").get(pk=obj.target_id)
+                return {
+                    "label": story.title,
+                    "url": f"/s/{story.slug}",
+                    "status": story.status,
+                    "author": story.author.handle,
+                }
+            if obj.target_type == Report.Target.COMMENT:
+                comment = Comment.objects.select_related("author", "story").get(pk=obj.target_id)
+                return {
+                    "label": comment.body[:140],
+                    "url": f"/s/{comment.story.slug}",
+                    "status": comment.status,
+                    "author": comment.author.handle,
+                }
+            if obj.target_type == Report.Target.USER:
+                user = User.objects.get(pk=obj.target_id)
+                return {
+                    "label": f"@{user.handle}",
+                    "url": f"/f/{user.handle}",
+                    "status": "suspended" if user.is_suspended else "active",
+                    "author": user.handle,
+                }
+        except (ObjectDoesNotExist, ValueError, DjangoValidationError):
+            pass
+        return {"label": "(no longer exists)", "url": None, "status": "missing", "author": None}
 
 
 class HeldCommentSerializer(serializers.ModelSerializer):

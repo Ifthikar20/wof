@@ -43,12 +43,29 @@ export function CoverUpload({ onReady }: { onReady: (id: string | null) => void 
     setStatus("Still processing, try again shortly.");
   }
 
+  const pick = (file?: File) => file && handle(file).catch(() => setStatus("Upload failed."));
+
   return (
-    <div className="flex items-center gap-4">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {preview && <img src={preview} alt="" className="h-16 w-24 rounded-lg object-cover" />}
-      <input type="file" accept={TYPES.join(",")} onChange={(e) => e.target.files?.[0] && handle(e.target.files[0]).catch(() => setStatus("Upload failed."))} />
-      {status && <span className="text-sm text-muted">{status}</span>}
-    </div>
+    <label
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => { e.preventDefault(); pick(e.dataTransfer.files?.[0]); }}
+      className="group flex cursor-pointer items-center gap-4 rounded-2xl p-1 focus-within:ring-2 focus-within:ring-ink"
+    >
+      {preview ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={preview} alt="" className="h-20 w-32 rounded-xl object-cover" />
+      ) : (
+        <span className="grid h-20 w-32 place-items-center rounded-xl bg-chip text-muted transition group-hover:bg-ink/10" aria-hidden>
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.7">
+            <rect x="3" y="4" width="18" height="16" rx="3" /><circle cx="9" cy="10" r="1.8" /><path d="m21 16-5-5-9 9" />
+          </svg>
+        </span>
+      )}
+      <span className="flex flex-col">
+        <span className="font-semibold">{preview ? "Replace image" : "Upload a cover image"}</span>
+        <span className="text-sm text-muted">{status || "Drag & drop or click · JPEG, PNG or WebP · up to 10 MB"}</span>
+      </span>
+      <input type="file" className="sr-only" accept={TYPES.join(",")} onChange={(e) => pick(e.target.files?.[0])} />
+    </label>
   );
 }

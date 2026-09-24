@@ -32,15 +32,36 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ["id", "name", "description", "is_private", "save_count", "created_at"]
+        fields = ["preview", "id", "name", "description", "is_private", "save_count", "created_at"]
         read_only_fields = ["id", "save_count", "created_at"]
+
+    preview = serializers.SerializerMethodField()
+
+    def get_preview(self, obj):
+        """Up to 3 story slugs + thumbnails for the board's cover mosaic."""
+        saves = obj.saves.select_related("story__cover").filter(story__status="published")
+        return [
+            {
+                "slug": sv.story.slug,
+                "thumb_url": sv.story.cover.thumb_url
+                if sv.story.cover_id and sv.story.cover.is_ready
+                else None,
+            }
+            for sv in saves.order_by("-created_at")[:3]
+        ]
 
 
 class BoardDetailSerializer(BoardSerializer):
     stories = serializers.SerializerMethodField()
+    owner = serializers.CharField(source="owner.handle", read_only=True)
+    is_owner = serializers.SerializerMethodField()
 
     class Meta(BoardSerializer.Meta):
-        fields = BoardSerializer.Meta.fields + ["stories"]
+        fields = BoardSerializer.Meta.fields + ["stories", "owner", "is_owner"]
+
+    def get_is_owner(self, obj):
+        request = self.context.get("request")
+        return bool(request and request.user.is_authenticated and obj.owner_id == request.user.pk)
 
     def get_stories(self, obj):
         saves = (

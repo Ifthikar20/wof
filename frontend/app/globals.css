@@ -157,3 +157,11 @@ body {
   .btn-outline:hover { background: var(--chip); }
   .btn:disabled { opacity: .5; cursor: not-allowed; }
 }
+
+@layer components {
+  /* Editorial drop cap on the first paragraph of a story. */
+  .drop-cap > p:first-of-type::first-letter {
+    font-family: var(--font-serif); float: left; font-size: 4.4em; line-height: .82;
+    padding: .06em .12em 0 0; color: var(--ink);
+  }
+}
