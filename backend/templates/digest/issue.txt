@@ -1,0 +1,11 @@
+{% autoescape off %}WALL OF FOUNDERS - Issue #{{ issue.number }}
+{{ issue.intro }}
+{% for item in items %}
+{{ forloop.counter }}. {{ item.story.title }}{% if item.editor_pick %} [Editor's pick]{% endif %}
+   by {{ item.story.author.display_name|default:item.story.author.handle }}{% if item.story.author.founder_profile %}, {{ item.story.author.founder_profile.title }} at {{ item.story.author.founder_profile.company.name }}{% endif %}
+   {{ item.story.dek }}
+   Read: {{ site_url }}/s/{{ item.story.slug }}
+{% endfor %}
+--
+You're receiving this because you subscribed at {{ site_url }}.
+Unsubscribe: {{ unsubscribe_url }}{% endautoescape %}

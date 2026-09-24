@@ -1,0 +1,22 @@
+[project]
+name = "wof-backend"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["apps/*/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "DJ"]
+ignore = ["S101", "DJ008", "DJ012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]
+"wof/settings/*" = ["S105"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "wof.settings.test"
+python_files = ["test_*.py"]
+addopts = "-q"

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>{{ issue.subject }}</title></head>
+<body style="margin:0;background:#f6f4f0;font-family:Georgia,serif;color:#1d1b18">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;margin:24px 0;border-radius:16px">
+  <tr><td style="padding:32px 32px 8px">
+    <div style="font:600 12px/1 Helvetica,Arial,sans-serif;letter-spacing:.12em;color:#b3261e">WALL OF FOUNDERS &middot; ISSUE #{{ issue.number }}</div>
+    {% if issue.intro %}<p style="font-size:17px;line-height:1.6">{{ issue.intro|linebreaksbr }}</p>{% endif %}
+  </td></tr>
+  {% for item in items %}
+  <tr><td style="padding:16px 32px;border-top:1px solid #eee">
+    {% if item.story.cover and item.story.cover.is_ready %}<img src="{{ item.story.cover.display_url }}" width="536" alt="" style="width:100%;border-radius:12px;display:block">{% endif %}
+    {% if item.editor_pick %}<div style="font:600 11px Helvetica,Arial,sans-serif;color:#b3261e;margin-top:12px">EDITOR'S PICK</div>{% endif %}
+    <h2 style="font-size:22px;margin:8px 0"><a href="{{ site_url }}/s/{{ item.story.slug }}" style="color:#1d1b18;text-decoration:none">{{ item.story.title }}</a></h2>
+    <div style="font:13px Helvetica,Arial,sans-serif;color:#6b665e">{{ item.story.author.display_name|default:item.story.author.handle }}{% if item.story.author.founder_profile %} &middot; {{ item.story.author.founder_profile.title }}, {{ item.story.author.founder_profile.company.name }}{% endif %} &middot; {{ item.story.reading_minutes }} min read</div>
+    <p style="font-size:16px;line-height:1.55">{{ item.story.dek }}</p>
+  </td></tr>
+  {% endfor %}
+  <tr><td style="padding:24px 32px;font:12px Helvetica,Arial,sans-serif;color:#8a857c;border-top:1px solid #eee">
+    You're receiving this because you subscribed at {{ site_url }}.
+    <a href="{{ unsubscribe_url }}" style="color:#8a857c">Unsubscribe</a> in one click.
+  </td></tr>
+</table></td></tr></table>
+</body></html>
