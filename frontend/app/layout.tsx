@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 import "./globals.css";
 import { HeaderActions } from "@/components/HeaderActions";
+import { HeaderNav } from "@/components/HeaderNav";
+import { SearchBar } from "@/components/SearchBar";
 
 export const metadata: Metadata = {
   title: { default: "Wall of Founders", template: "%s · Wall of Founders" },
@@ -17,21 +20,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="min-h-screen">
-        <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur">
-          <div className="mx-auto flex max-w-[1600px] items-center gap-4 px-4 py-3">
-            <Link href="/" className="flex items-center gap-2 font-serif text-xl font-bold tracking-tight">
-              <span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-accent-ink text-sm font-sans">W</span>
-              <span className="hidden sm:inline">Wall of Founders</span>
+        <header className="sticky top-0 z-20 bg-bg">
+          <div className="mx-auto flex max-w-[1880px] items-center gap-2 px-4 py-2">
+            <Link href="/" aria-label="Wall of Founders home" className="grid h-12 w-12 shrink-0 place-items-center rounded-full hover:bg-chip">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-accent text-sm font-bold text-accent-ink">W</span>
             </Link>
-            <nav className="flex items-center gap-1 text-sm">
-              <Link href="/" className="rounded-full px-3 py-1.5 hover:bg-surface">Wall</Link>
-              <Link href="/digest" className="rounded-full px-3 py-1.5 hover:bg-surface">Digest</Link>
-            </nav>
-            <div className="ml-auto"><HeaderActions /></div>
+            <HeaderNav />
+            <Suspense fallback={<div className="h-12 flex-1 rounded-full bg-chip" />}>
+              <SearchBar />
+            </Suspense>
+            <HeaderActions />
           </div>
         </header>
-        <main className="mx-auto max-w-[1600px] px-4 py-6">{children}</main>
-        <footer className="mx-auto max-w-[1600px] px-4 py-10 text-sm text-muted">
+        <main className="mx-auto max-w-[1880px] px-4 pb-6 pt-2">{children}</main>
+        <footer className="mx-auto max-w-[1880px] px-4 py-10 text-center text-sm text-muted">
           Every story is written by a founder we verified by hand. Every edit is versioned and publicly hashed.
         </footer>
       </body>

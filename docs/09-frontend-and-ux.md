@@ -5,12 +5,20 @@
 dense masonry of cards you scan, open and save), with an editorial reading experience
 (serif typography, generous measure, calm colour).
 
-Differences from Pinterest, on purpose:
+What we borrow from Pinterest:
+- **Pin-width masonry**: 236px columns, as many as fit (5 at 1440px), 2 on phones.
+- **Cards that are almost all visual**, with rounded 16px corners and minimal text underneath (author, verified badge, company).
+- **Hover overlay** on desktop: the card darkens, shows its topic, and offers a red **Save** pill that saves in place without leaving the wall.
+- **Header**: Home/Digest pills, a big grey pill search bar, an avatar menu.
+- **Topic chips**: grey pills, black when selected, sticky under the header.
+- **A promoted "pin"** for the digest inside the grid (dismissible).
+
+What we do differently, on purpose:
 | Pinterest | Wall of Founders | Why |
 |---|---|---|
-| Image-first pins | **Typographic cards** when there is no cover; the title *is* the visual | Stories are text; founders shouldn't need stock photos |
+| Image-first pins | **Typographic posters** (gradient + serif title) when there is no cover | Stories are text; founders shouldn't need stock photos |
 | Infinite scroll | "Show more" button with cursor pagination | Readers keep their place; a natural throttle on scraping; accessible |
-| Engagement-ranked home feed | Chronological wall + topic filters; ranking only in the digest | Transparent and explainable |
+| Engagement-ranked home feed | Chronological wall + topic filters + search; ranking only in the digest | Transparent and explainable |
 | Anyone can pin | Only verified founders publish; everyone can save | Trust |
 
 ## Pages (implemented)
@@ -51,10 +59,10 @@ system sans for UI. No web-font downloads, so there are no third-party requests 
 layout shift.
 
 ## Masonry
-CSS multi-column layout (`.wall { columns: N <min-width> }`) from 2 to 5 columns by
-breakpoint, with `break-inside: avoid`. No JavaScript layout, no layout thrash, and it
+CSS multi-column layout (`.wall { column-width: 236px }`, so the browser fits as many
+Pinterest-width columns as it can; phones reset to exactly 2), with `break-inside: avoid`. No JavaScript layout, no layout thrash, and it
 works before hydration. Typographic cards get a deterministic tint and height from the
-slug hash, which gives the wall a Pinterest rhythm that stays the same on every visit.
+slug hash, which gives the wall a Pinterest rhythm that stays the same on every visit. The hover overlay is CSS-only (`.pin:hover .pin-overlay`) and is hidden on touch devices (`@media (hover: none)`).
 
 ## Accessibility (WCAG 2.2 AA)
 - Semantic landmarks (`header`, `nav`, `main`, `article`, `footer`); a single `h1` per page.

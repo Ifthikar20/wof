@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { api, ApiException } from "@/lib/client-api";
+import { saveStory } from "@/lib/boards";
 import { ReportButton } from "./ReportButton";
-
-type Board = { id: string; name: string };
 
 export function StoryActions(props: { slug: string; storyId: string; initialLiked: boolean; likeCount: number; isAuthor: boolean; status: string }) {
   const [liked, setLiked] = useState(props.initialLiked);
@@ -32,9 +31,7 @@ export function StoryActions(props: { slug: string; storyId: string; initialLike
 
   async function save() {
     try {
-      const boards = await api<Board[]>("/boards");
-      const target = boards[0] ?? (await api<Board>("/boards", { method: "POST", body: { name: "Saved stories" } }));
-      await api(`/boards/${target.id}/saves`, { method: "POST", body: { story: props.slug } });
+      const target = await saveStory(props.slug);
       setMessage(`Saved to “${target.name}”`);
     } catch (err) {
       if (!needLogin(err)) setMessage("Could not save.");

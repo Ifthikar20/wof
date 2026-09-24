@@ -16,6 +16,8 @@
   --card-4: #f4e3f1;
   --card-5: #fbf1c7;
   --card-6: #e5e7eb;
+  --save: #e60023;
+  --chip: #efefef;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,6 +36,8 @@
     --card-4: #33202f;
     --card-5: #332c12;
     --card-6: #26282c;
+    --save: #e60023;
+    --chip: #2a2724;
   }
 }
 
@@ -46,6 +50,8 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-verified: var(--verified);
+  --color-save: var(--save);
+  --color-chip: var(--chip);
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -53,12 +59,26 @@
 html { background: var(--bg); color: var(--ink); }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
 
-/* Masonry wall: CSS columns keep reading order simple and need zero JS. */
-.wall { column-gap: 1rem; columns: 2 160px; }
-@media (min-width: 640px) { .wall { columns: 3 200px; } }
-@media (min-width: 1024px) { .wall { columns: 4 220px; } }
-@media (min-width: 1440px) { .wall { columns: 5 240px; } }
-.wall > * { break-inside: avoid; margin-bottom: 1rem; }
+/* Masonry wall: Pinterest-width (236px) columns, as many as fit. Pure CSS, zero JS. */
+.wall { column-width: 236px; column-gap: 16px; }
+.wall > * { break-inside: avoid; margin-bottom: 20px; }
+@media (max-width: 639px) {
+  .wall { column-width: auto; column-count: 2; column-gap: 8px; } /* drop the 236px minimum */
+  .wall > * { margin-bottom: 14px; }
+}
+
+/* Pin hover overlay (desktop only; touch devices get Save on the story page). */
+.pin-overlay { opacity: 0; transition: opacity .15s ease; }
+.pin:hover .pin-overlay, .pin:focus-within .pin-overlay { opacity: 1; }
+@media (hover: none) { .pin-overlay { display: none; } }
+
+/* Topic chips: grey pills, black when selected. */
+.chip {
+  display: inline-flex; align-items: center; white-space: nowrap; border-radius: 999px;
+  padding: .6rem 1rem; font-size: .9rem; font-weight: 600; background: var(--chip); color: var(--ink);
+}
+.chip:hover { filter: brightness(.95); }
+.chip-active { background: var(--ink); color: var(--bg); }
 
 /* Story body (server-sanitised HTML). */
 .prose-story { font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.75; }

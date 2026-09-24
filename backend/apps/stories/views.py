@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
@@ -69,6 +69,12 @@ class FeedView(PublicCacheMixin, generics.ListCreateAPIView):
             qs = qs.filter(tags__slug=tag[:40])
         if author := self.request.query_params.get("author"):
             qs = qs.filter(author__handle=author[:30])
+        if q := self.request.query_params.get("q", "").strip()[:80]:
+            # Simple substring search; same throttle + cursor pagination as the feed, so it
+            # adds no cheaper way to enumerate the corpus. Tag match via subquery avoids
+            # duplicate rows from the M2M join.
+            tagged = Story.objects.filter(tags__name__icontains=q).values("pk")
+            qs = qs.filter(Q(title__icontains=q) | Q(dek__icontains=q) | Q(pk__in=tagged))
         return qs
 
     def create(self, request, *args, **kwargs):

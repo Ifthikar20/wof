@@ -136,3 +136,24 @@ def test_suspended_founder_stories_disappear(client, founder):
 def test_body_size_limit(client, founder):
     res = create(auth(client, founder), body_markdown="x" * 70_000)
     assert res.status_code in (400, 413)
+
+
+def test_search_by_title_dek_and_tag(client, founder):
+    from apps.stories.models import Tag
+
+    auth(client, founder)
+    Tag.objects.create(name="Burnout", slug="burnout")
+    a = create(client, title="Garage beginnings", dek="How it started").json()["slug"]
+    b = create(client, title="Quiet year", dek="Running on empty", tags=["burnout"]).json()["slug"]
+    c = create(client, title="Unrelated", dek="Nothing here").json()["slug"]
+    for slug in (a, b, c):
+        client.post(f"/api/v1/stories/{slug}/publish")
+    anon = type(client)()
+
+    def search(q):
+        return {s["slug"] for s in anon.get("/api/v1/stories", {"q": q}).json()["results"]}
+
+    assert search("garage") == {a}
+    assert search("EMPTY") == {b}
+    assert search("burn") == {b}  # tag name, no duplicate rows
+    assert search("   ") == {a, b, c}  # blank query means no filter

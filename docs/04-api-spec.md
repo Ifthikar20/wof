@@ -43,7 +43,7 @@ Base path: **`/api/v1`**, served on the same origin as the website (Next.js prox
 ## Stories
 | Method | Path | Who | Notes |
 |---|---|---|---|
-| GET | `/stories?tag=&author=&cursor=` | any | wall feed (published, author not suspended) |
+| GET | `/stories?tag=&author=&q=&cursor=` | any | wall feed (published, author not suspended); `q` (≤ 80 chars) matches title, subtitle or topic name |
 | POST | `/stories` | verified founder + 2FA | `{title, dek?, body_markdown, tags?[≤5], cover_id?}` → draft |
 | GET | `/stories/{slug}` | any / author / moderator | includes `body_html`, `content_hash`, `revision_number`, `viewer`; `body_markdown` only for the author |
 | PATCH | `/stories/{slug}` | author | new revision if the content changed; locked when hidden or removed |

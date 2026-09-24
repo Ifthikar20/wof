@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { Page, StoryCard as Story } from "@/lib/types";
 import { StoryCard } from "./StoryCard";
 
 /** Server renders the first page (fast, crawlable); this appends later pages by cursor. */
-export function Wall({ initial }: { initial: Page<Story> }) {
+const PROMO_AFTER = 5;
+
+export function Wall({ initial, promo, emptyText = "No stories here yet." }: { initial: Page<Story>; promo?: React.ReactNode; emptyText?: string }) {
   const [stories, setStories] = useState(initial.results);
   const [next, setNext] = useState(initial.next);
   const [loading, setLoading] = useState(false);
@@ -26,14 +28,17 @@ export function Wall({ initial }: { initial: Page<Story> }) {
   }
 
   if (stories.length === 0) {
-    return <p className="py-24 text-center text-muted">No stories here yet.</p>;
+    return <p className="py-24 text-center text-muted">{emptyText}</p>;
   }
 
   return (
     <>
       <div className="wall">
-        {stories.map((s) => (
-          <StoryCard key={s.slug} story={s} />
+        {stories.map((s, i) => (
+          <Fragment key={s.slug}>
+            <StoryCard story={s} />
+            {promo && i === Math.min(PROMO_AFTER, stories.length) - 1 && promo}
+          </Fragment>
         ))}
       </div>
       {next && (
