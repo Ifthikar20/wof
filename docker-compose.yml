@@ -1,0 +1,89 @@
+# Local development stack. Every service binds to 127.0.0.1 only.
+name: wall-of-founders
+
+x-backend: &backend
+  build: { context: ./backend, args: { INSTALL_DEV: "true" } }
+  env_file: .env
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_started }
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: ["no-new-privileges:true"]
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wof
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_local_only
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports: ["127.0.0.1:5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d wof"]
+      interval: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports: ["127.0.0.1:6379:6379"]
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: wofminio
+      MINIO_ROOT_PASSWORD: wofminio-secret
+    volumes: [miniodata:/data]
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on: [minio]
+    environment:
+      MINIO_ROOT_USER: wofminio
+      MINIO_ROOT_PASSWORD: wofminio-secret
+    entrypoint: ["/bin/sh", "/init.sh"]
+    volumes: ["./infra/minio/init.sh:/init.sh:ro"]
+    restart: on-failure
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["127.0.0.1:8025:8025", "127.0.0.1:1025:1025"]
+
+  backend:
+    <<: *backend
+    command: ["sh", "-c", "python manage.py migrate --noinput && gunicorn wof.wsgi --bind 0.0.0.0:8000 --reload --workers 2"]
+    environment:
+      DJANGO_SETTINGS_MODULE: wof.settings.dev
+    volumes: ["./backend:/app:ro"]
+    ports: ["127.0.0.1:8000:8000"]
+
+  worker:
+    <<: *backend
+    command: ["celery", "-A", "wof", "worker", "-l", "info", "--concurrency", "2"]
+    volumes: ["./backend:/app:ro"]
+
+  beat:
+    <<: *backend
+    command: ["celery", "-A", "wof", "beat", "-l", "info", "--schedule", "/tmp/celerybeat-schedule"]
+    volumes: ["./backend:/app:ro"]
+
+  frontend:
+    build: { context: ./frontend }
+    environment:
+      API_INTERNAL_URL: http://backend:8000
+      NEXT_PUBLIC_MEDIA_HOST: http://localhost:9000
+    depends_on: [backend]
+    read_only: true
+    tmpfs: [/tmp, /app/.next/cache]
+    security_opt: ["no-new-privileges:true"]
+    ports: ["127.0.0.1:3000:3000"]
+
+volumes:
+  pgdata:
+  miniodata:

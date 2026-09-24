@@ -108,3 +108,9 @@ def test_security_headers_and_cookie_flags(client, reader):
 
 def test_passwords_are_hashed(reader):
     assert PASSWORD not in User.objects.get(pk=reader.pk).password
+
+
+def test_me_is_null_for_anonymous_and_patch_requires_login(client, db):
+    res = client.get("/api/v1/auth/me")
+    assert res.status_code == 200 and res.json() is None
+    assert client.patch("/api/v1/auth/me", {"bio": "x"}, format="json").status_code == 403

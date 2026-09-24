@@ -71,6 +71,13 @@ class StoryDetailSerializer(StoryCardSerializer):
             "viewer",
         ]
 
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        viewer = data.get("viewer")
+        if viewer and viewer["is_author"]:
+            data["body_markdown"] = obj.body_markdown  # editor needs the source text
+        return data
+
     def get_viewer(self, obj):
         request = self.context.get("request")
         user = getattr(request, "user", None)

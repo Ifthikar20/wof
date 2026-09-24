@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
+from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -111,10 +112,15 @@ class LogoutView(APIView):
 
 
 class MeView(APIView):
-    permission_classes = [IsAuthenticated]
     throttle_scope = "write"
 
+    def get_permissions(self):
+        return [AllowAny()] if self.request.method == "GET" else [IsAuthenticated()]
+
     def get(self, request):
+        # 200 + null for anonymous visitors: "not logged in" is a normal state, not an error.
+        if not request.user.is_authenticated:
+            return JsonResponse(None, safe=False)  # DRF would render None as an empty body
         return Response(MeSerializer(request.user).data)
 
     def patch(self, request):
