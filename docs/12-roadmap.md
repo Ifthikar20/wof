@@ -15,12 +15,12 @@
 ## Milestone 1: Private beta (≈ 6 weeks)
 | Area | Work |
 |---|---|
-| Infra | Terraform for the reference architecture; Cloudflare WAF, bot rules, Access; object-lock audit anchoring; deploy pipeline |
+| Infra | ✅ Terraform for the reference architecture; Cloudflare WAF, bot rules, Access; object-lock audit anchoring; deploy pipeline. ⏳ Staging environment; Playwright + ZAP stage |
 | Security | External pen test; passkeys (WebAuthn) for founders and staff; email-first (magic-link) signup to close enumeration; `pip-compile --generate-hashes`; CODEOWNERS; Terms of Service page |
-| Founders | QR code on the 2FA screen; re-verification reminders; story preview before publish |
-| Moderation | Moderation console web UI; author notifications on hide/remove; second-reviewer sampling |
-| Email | Provider bounce/complaint webhooks (signed); SPF/DKIM/DMARC; warm-up |
-| Readers | Board management; choose a board when saving |
+| Founders | ✅ QR code on the 2FA screen; ✅ draft preview. ⏳ Re-verification reminders |
+| Moderation | ✅ Moderation console. ⏳ Author notifications on hide/remove; second-reviewer sampling |
+| Email | ✅ Bounce/complaint webhook. ⏳ SPF/DKIM/DMARC records and warm-up (at provider setup) |
+| Readers | ✅ Board management; ✅ password reset; ✅ data export and account deletion. ⏳ Choose a board when saving |
 | Ops | OpenTelemetry traces/metrics; dashboards and alerts from [11](11-observability-and-operations.md) |
 
 ## Milestone 2: Public launch (≈ 8 weeks)

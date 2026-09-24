@@ -44,6 +44,12 @@ API and Cloudflare Turnstile.
 - `frontend/Dockerfile`: multi-stage Node 22 Alpine, `npm ci`, standalone output, runs as UID 10001.
 - Runtime flags (compose and prod): `read_only: true`, `tmpfs: /tmp`, `no-new-privileges`, all capabilities dropped.
 
+## Implemented infrastructure-as-code
+The reference architecture is implemented in [`infra/terraform`](../infra/terraform/README.md),
+with a GitHub Actions deploy pipeline in [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml).
+The README has the first-time setup steps. Terraform formatting and a Checkov security scan
+run in CI (388 checks pass; each accepted exception is annotated in place).
+
 ## CI/CD pipeline
 ```mermaid
 flowchart LR
@@ -55,8 +61,9 @@ flowchart LR
   E2E -->|manual approval| P[Deploy to prod<br/>blue/green]
   P --> V[Post-deploy: healthz, verify_audit_chain, error-rate watch]
 ```
-- `.github/workflows/ci.yml` implements the CI box (✅). The deploy stages are ⏳ and
-  depend on the chosen cloud account.
+- `.github/workflows/ci.yml` implements the CI box (✅); `.github/workflows/deploy.yml` builds,
+  pushes, migrates, rolls out and smoke-tests (✅). A separate staging environment and the
+  Playwright/ZAP stage are ⏳.
 - **Migrations** run as a one-off task using the `wof_owner` role. Application tasks use
   `wof_app`, which can't run DDL ([roles.sql](../infra/postgres/roles.sql)).
 - **Zero-downtime migrations:** expand → deploy → contract. Never rename or drop in the same

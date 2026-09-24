@@ -71,7 +71,7 @@ Response: bot-management rule → challenge → block. Log to the incident track
   48h (keeps signed digest links and sessions working), then remove it.
 
 ## Compliance & privacy operations
-- Data-subject requests (export or delete) handled within 30 days (self-serve endpoint ⏳).
+- Data-subject requests: self-serve export and deletion in Settings › Your data; anything else handled within 30 days.
 - Account deletion: anonymise the user row; published stories are unpublished unless
   retained for legal reasons; audit entries reference the user only by UUID (pseudonymous), so history stays intact while the person becomes unidentifiable.
 - Maintain a records-of-processing register and a sub-processor list (Cloudflare, AWS,

@@ -1,0 +1,6 @@
+domain                = "walloffounders.com"
+cloudflare_account_id = "0123456789abcdef0123456789abcdef"
+staff_email_domain    = "walloffounders.com"
+alarm_email           = "oncall@walloffounders.com"
+# Secrets: pass via TF_VAR_* environment variables, never commit them.
+# TF_VAR_cloudflare_api_token, TF_VAR_email_host_user, TF_VAR_email_webhook_password

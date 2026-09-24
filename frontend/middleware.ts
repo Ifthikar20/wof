@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV !== "production";
   const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST ?? "";
+  const uploadHost = process.env.NEXT_PUBLIC_UPLOAD_HOST ?? ""; // presigned POST target (S3)
   const secure = request.nextUrl.protocol === "https:" || request.headers.get("x-forwarded-proto") === "https";
 
   const csp = [
@@ -17,7 +18,7 @@ export function middleware(request: NextRequest) {
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: ${mediaHost}`,
     `font-src 'self'`,
-    `connect-src 'self' ${mediaHost} https://challenges.cloudflare.com`,
+    `connect-src 'self' ${mediaHost} ${uploadHost} https://challenges.cloudflare.com`,
     `frame-src https://challenges.cloudflare.com`,
     `object-src 'none'`,
     `base-uri 'none'`,

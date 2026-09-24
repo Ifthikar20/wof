@@ -25,3 +25,12 @@ next-env.d.ts
 .idea/
 .vscode/
 dump.rdb
+
+# Terraform (state and real variable files may contain secrets)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+infra/terraform/backend.hcl
+crash.log

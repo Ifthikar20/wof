@@ -45,6 +45,21 @@ exactly the same account. The founder path shows the four steps ahead (account �
 email → evidence review → 2FA) and then drops the new user straight into `/verify`.
 Choosing it grants nothing by itself.
 
+## Passwords, export and deletion
+- **Forgot password:** `/forgot` emails a link that works once and expires in 1 hour. The
+  response is identical whether or not the email has an account, and each account gets at most
+  one email per 10 minutes. Setting the new password signs out every device and emails a notice.
+  It does not log you in, so 2FA still applies at the next login.
+- **Change password:** Settings › Security. Requires the current password; keeps this session
+  and signs out every other one.
+- **Download your data:** Settings › Your data gives one JSON file with everything tied to the account.
+- **Delete your account:** requires the password, the 2FA code if enabled, and typing DELETE.
+  Stories come off the Wall; comments are blanked; likes, boards, follows, subscriptions,
+  verification data and uploads are erased; the account is anonymised and signed out
+  everywhere. The handle is retired (only its hash is kept) so nobody can re-register it to
+  impersonate a deleted founder. Past revisions of removed stories stay in the tamper-evident
+  record, linked only to an anonymous ID.
+
 ## Signing up and logging in
 
 | Step | What happens | Protection |

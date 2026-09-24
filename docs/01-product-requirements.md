@@ -28,7 +28,8 @@ Status legend: ✅ implemented in this repo · 🟡 partially implemented · ⏳
 | A-6 | Follow founders | ✅ |
 | A-7 | Report a story, comment or user | ✅ story UI · API for all types |
 | A-8 | Subscribe to the digest with double opt-in; one-click unsubscribe | ✅ |
-| A-9 | Export or delete my data (GDPR/CCPA) | ⏳ |
+| A-9 | Export or delete my data (GDPR/CCPA) | ✅ Settings › Your data |
+| A-10 | Reset a forgotten password; change password (signs out other devices) | ✅ |
 
 ### Founder
 | ID | Requirement | Status |

@@ -1,0 +1,104 @@
+name: Deploy
+
+# Runs after CI passes on main (or manually). The "production" environment should require
+# a reviewer's approval in GitHub settings; the AWS role only trusts that environment.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # OIDC: short-lived AWS credentials, no stored keys
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  CLUSTER: ${{ vars.ECS_CLUSTER }}
+  PREFIX: ${{ vars.ECS_CLUSTER }} # task-definition families are "<cluster>-<service>"
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Log in to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push images
+        id: images
+        run: |
+          TAG="$(git rev-parse --short=12 HEAD)"
+          BACKEND="${{ vars.ECR_BACKEND }}:$TAG"
+          FRONTEND="${{ vars.ECR_FRONTEND }}:$TAG"
+          docker build -t "$BACKEND" backend
+          docker build -t "$FRONTEND" \
+            --build-arg NEXT_PUBLIC_MEDIA_HOST="${{ vars.MEDIA_HOST }}" \
+            --build-arg NEXT_PUBLIC_UPLOAD_HOST="${{ vars.UPLOAD_HOST }}" \
+            --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY="${{ vars.TURNSTILE_SITE_KEY }}" \
+            frontend
+          docker push "$BACKEND"
+          docker push "$FRONTEND"
+          echo "backend=$BACKEND" >> "$GITHUB_OUTPUT"
+          echo "frontend=$FRONTEND" >> "$GITHUB_OUTPUT"
+
+      - name: Register task definitions with the new images
+        id: taskdefs
+        run: |
+          register() { # $1 = service family suffix, $2 = image
+            aws ecs describe-task-definition --task-definition "$PREFIX-$1" --query taskDefinition \
+              | jq --arg img "$2" '.containerDefinitions[0].image = $img
+                  | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' \
+              > "td-$1.json"
+            aws ecs register-task-definition --cli-input-json "file://td-$1.json" \
+              --query taskDefinition.taskDefinitionArn --output text
+          }
+          for svc in api worker beat migrate; do
+            echo "$svc=$(register "$svc" "${{ steps.images.outputs.backend }}")" >> "$GITHUB_OUTPUT"
+          done
+          echo "web=$(register web "${{ steps.images.outputs.frontend }}")" >> "$GITHUB_OUTPUT"
+
+      - name: Run database migrations (as the schema owner)
+        run: |
+          TASK=$(aws ecs run-task --cluster "$CLUSTER" --launch-type FARGATE \
+            --task-definition "${{ steps.taskdefs.outputs.migrate }}" \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ vars.PRIVATE_SUBNETS }}],securityGroups=[${{ vars.APP_SECURITY_GROUP }}],assignPublicIp=DISABLED}" \
+            --query 'tasks[0].taskArn' --output text)
+          aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK"
+          CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK" --query 'tasks[0].containers[0].exitCode' --output text)
+          echo "migrate exit code: $CODE"
+          test "$CODE" = "0"
+
+      - name: Roll out services
+        run: |
+          aws ecs update-service --cluster "$CLUSTER" --service api    --task-definition "${{ steps.taskdefs.outputs.api }}"    >/dev/null
+          aws ecs update-service --cluster "$CLUSTER" --service worker --task-definition "${{ steps.taskdefs.outputs.worker }}" >/dev/null
+          aws ecs update-service --cluster "$CLUSTER" --service beat   --task-definition "${{ steps.taskdefs.outputs.beat }}"   >/dev/null
+          aws ecs update-service --cluster "$CLUSTER" --service web    --task-definition "${{ steps.taskdefs.outputs.web }}"    >/dev/null
+          # Circuit breakers roll back automatically if new tasks fail health checks.
+          aws ecs wait services-stable --cluster "$CLUSTER" --services api worker beat web
+
+      - name: Smoke test
+        run: |
+          for path in / /api/v1/tags /robots.txt; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://${{ vars.DOMAIN }}$path")
+            echo "$path -> $code"
+            test "$code" = "200"
+          done

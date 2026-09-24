@@ -47,7 +47,7 @@ flowchart LR
 | S3 | Session hijack / fixation | Stolen cookie via XSS; fixation | HttpOnly, Secure, SameSite=Lax, `__Host-` prefix ✅; session rotated on login ✅; Redis-backed sessions revocable server-side ✅; strict CSP makes XSS exfiltration hard ✅ |
 | S4 | Staff impersonation | Use a moderator's password to reach /admin | Admin requires `is_staff` + TOTP enabled + a session flagged `otp_verified` at API login ✅; admin reachable only through Cloudflare Access SSO ⏳ (infra); non-default admin path ✅ |
 | **T**1 | Silent content edits | Author (or attacker) rewrites history after the story goes viral | Every save creates an immutable `StoryRevision` in a per-story hash chain ✅; `content_hash` shown publicly ✅; public revision list ✅; DB trigger blocks UPDATE/DELETE on revisions ✅ |
-| T2 | Staff or insider tampering | Moderator edits a founder's words; DBA edits rows | Admin makes story content read-only ✅; moderation can only change status, with a reason ✅; hash-chained audit log ✅; triggers + role grants (INSERT/SELECT only) ✅; nightly chain verification with alerting ✅; daily head hash exported to an object-lock bucket ⏳ |
+| T2 | Staff or insider tampering | Moderator edits a founder's words; DBA edits rows | Admin makes story content read-only ✅; moderation can only change status, with a reason ✅; hash-chained audit log ✅; triggers + role grants (INSERT/SELECT only) ✅; nightly chain verification with alerting ✅; daily head hash exported to an object-lock bucket ✅ |
 | T3 | Stored XSS in stories | `<script>` or `javascript:` links in Markdown | Markdown parser with raw HTML **disabled** ✅ → nh3 allowlist sanitiser (tags, attrs, URL schemes) ✅ → nonce-based CSP with `strict-dynamic`, no inline scripts ✅; images in the body are disabled ✅; comments are plain text escaped by React ✅ |
 | T4 | CSRF | Cross-site form posts a like/story | Django CSRF on all unsafe methods with SessionAuthentication ✅; SameSite=Lax ✅; same-origin API (no CORS) ✅ |
 | T5 | Malicious uploads | Polyglot JPEG/JS, decompression bomb, EXIF GPS leak | Magic-byte sniffing ✅; `Image.verify()` ✅; pixel cap ✅; full re-encode to WebP ✅; metadata dropped ✅; originals never public ✅; separate buckets ✅; `nosniff` ✅ |
@@ -96,8 +96,8 @@ The strongest guarantee in the product. Full detail in [07](07-content-integrity
    chain, serialised by a Postgres advisory lock.
 4. **Database-enforced append-only.** Triggers reject UPDATE and DELETE; in production the
    app role has only `INSERT, SELECT` on those tables ([roles.sql](../infra/postgres/roles.sql)).
-5. **External anchoring (⏳).** The nightly job exports the audit head hash to an
-   object-lock (WORM) bucket in a separate cloud account. Even a full database-superuser
+5. **External anchoring (✅).** The nightly job exports the audit head hash to an
+   object-lock (WORM) bucket (`AUDIT_ANCHOR_BUCKET`; move it to a separate cloud account for the strongest guarantee). Even a full database-superuser
    compromise then can't rewrite history without the mismatch showing.
 
 ## 5. Anti-scraping & anti-download

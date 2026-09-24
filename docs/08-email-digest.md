@@ -85,7 +85,7 @@ log is planned.
 | DMARC | Start at `p=none; rua=…`, move to `p=quarantine` after 4 weeks clean, then `p=reject` |
 | BIMI | After DMARC `p=reject`, add a verified logo |
 | One-click unsubscribe | `List-Unsubscribe` + `List-Unsubscribe-Post: List-Unsubscribe=One-Click` ✅ |
-| Bounce & complaint webhooks | Provider → `/api/v1/digest/webhooks/<provider>` with signature verification → status `bounced` (⏳) |
+| Bounce & complaint webhooks | Postmark → `/api/v1/digest/webhooks/postmark` (HTTP Basic credentials, constant-time check) → status `bounced`; bounced addresses are never re-subscribed ✅ |
 | Complaint rate | Keep < 0.1% (Gmail and Yahoo bulk-sender rules); alert at 0.08% |
 | Warm-up | Ramp volume over 2–4 weeks on a new IP or domain |
 

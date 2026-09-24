@@ -32,6 +32,11 @@ Base path: **`/api/v1`**, served on the same origin as the website (Next.js prox
 | PATCH | `/auth/me` | user | `write` | `{display_name?, bio?}` |
 | POST | `/auth/2fa/setup` | user | `auth` | → `{otpauth_uri}` (not active until confirmed) |
 | POST | `/auth/2fa/confirm` | user | `auth` | `{code}` → enables TOTP |
+| POST | `/auth/password/reset` 🤖 | any | `password` 5/h | `{email}` → always 202 with the same body; emails a 1-hour, single-use link (10-min per-account cooldown) |
+| POST | `/auth/password/reset/confirm` | any | `password` | `{uid, token, password}`; signs out every session; no auto-login |
+| POST | `/auth/password` | user | `password` | `{current_password, new_password}`; keeps this session, signs out the rest |
+| GET | `/auth/me/export` | user | `export` 5/h | JSON download of all the account's data |
+| POST | `/auth/me/delete` | user | `password` | `{password, otp?, confirm: "DELETE"}` → 204; anonymises the account (see [13](13-accounts-and-authentication.md)) |
 
 ## Founder verification: `/verification`
 | Method | Path | Who | Notes |
@@ -91,6 +96,7 @@ Base path: **`/api/v1`**, served on the same origin as the website (Next.js prox
 | POST | `/digest/unsubscribe?token=` | any | RFC 8058 one-click target; **POST only**, so link scanners can't unsubscribe people |
 | GET | `/digest/issues` | any | archive (last 52 sent) |
 | GET | `/digest/issues/{number}` | any | |
+| POST | `/digest/webhooks/postmark` | email provider (HTTP Basic) | hard bounce, spam complaint or list-unsubscribe → subscription `bounced`; 404 until configured |
 
 ## Rate limits (defaults, per user or else per client IP)
 
