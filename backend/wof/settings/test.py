@@ -23,3 +23,8 @@ SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # Use Postgres when provided (CI), SQLite otherwise for fast local runs.
 if not env("POSTGRES_HOST"):
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
+MIDDLEWARE = [m for m in MIDDLEWARE if "whitenoise" not in m]  # noqa: F405

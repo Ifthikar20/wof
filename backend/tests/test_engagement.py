@@ -122,3 +122,23 @@ def test_moderator_hides_reported_story(client, reader, moderator, story):
 def test_cannot_follow_self(client, founder):
     auth(client, founder)
     assert client.post(f"/api/v1/founders/{founder.handle}/follow").status_code == 400
+
+
+def test_suspension_ends_existing_sessions(db, story):
+    from rest_framework.test import APIClient
+
+    from .conftest import PASSWORD
+
+    user = make_user(email="sus@example.org", handle="suspect")
+    c = APIClient()
+    assert (
+        c.post(
+            "/api/v1/auth/login", {"email": user.email, "password": PASSWORD}, format="json"
+        ).status_code
+        == 200
+    )
+    assert c.get("/api/v1/auth/me").json()["handle"] == "suspect"
+    user.is_suspended = True
+    user.save()
+    assert c.get("/api/v1/auth/me").json() is None
+    assert c.post(f"/api/v1/stories/{story.slug}/like").status_code == 403

@@ -28,3 +28,19 @@ class SecurityHeadersMiddleware:
         if user is not None and user.is_authenticated:
             response.headers["Cache-Control"] = "private, no-store"
         return response
+
+
+class SuspendedUserMiddleware:
+    """End the session of a suspended user on their next request. Suspension then takes
+    effect immediately on every device, not just at the next login."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = getattr(request, "user", None)
+        if user is not None and user.is_authenticated and user.is_suspended:
+            from django.contrib.auth import logout
+
+            logout(request)
+        return self.get_response(request)

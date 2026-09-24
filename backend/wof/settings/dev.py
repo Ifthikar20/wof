@@ -25,3 +25,8 @@ if env("USE_SQLITE", ""):
     DATABASES = {
         "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "dev.sqlite3"}  # noqa: F405
     }
+
+# Serve admin static straight from app directories (no collectstatic needed with the
+# read-only source mount used by docker compose).
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
