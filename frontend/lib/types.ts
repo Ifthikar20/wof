@@ -29,6 +29,7 @@ export type StoryCard = {
 };
 
 export type StoryDetail = StoryCard & {
+  id: string;
   body_html: string;
   status: "draft" | "published" | "hidden" | "removed";
   revision_number: number;

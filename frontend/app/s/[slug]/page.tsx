@@ -73,7 +73,7 @@ export default async function StoryPage({ params }: Props) {
           allowlist sanitiser. The page CSP (nonce-only scripts) is the second barrier. */}
       <div className="prose-story" dangerouslySetInnerHTML={{ __html: story.body_html }} />
 
-      <StoryActions slug={story.slug} initialLiked={story.viewer?.liked ?? false} likeCount={story.like_count}
+      <StoryActions slug={story.slug} storyId={story.id} initialLiked={story.viewer?.liked ?? false} likeCount={story.like_count}
                     isAuthor={story.viewer?.is_author ?? false} status={story.status} />
 
       <details className="mt-6 rounded-xl border border-line bg-surface px-4 py-3 text-sm text-muted">

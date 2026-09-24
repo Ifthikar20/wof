@@ -90,6 +90,7 @@ def test_private_boards_are_private(client, reader, story, db):
 
 def test_moderator_hides_reported_story(client, reader, moderator, story):
     auth(client, reader)
+    assert client.get(f"/api/v1/stories/{story.slug}").json()["id"] == str(story.id)
     report = client.post(
         "/api/v1/reports",
         {"target_type": "story", "target_id": str(story.id), "reason": "plagiarism"},

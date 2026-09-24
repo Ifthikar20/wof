@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: blob: ${mediaHost}`,
     `font-src 'self'`,
-    `connect-src 'self' ${mediaHost}`,
+    `connect-src 'self' ${mediaHost} https://challenges.cloudflare.com`,
     `frame-src https://challenges.cloudflare.com`,
     `object-src 'none'`,
     `base-uri 'none'`,

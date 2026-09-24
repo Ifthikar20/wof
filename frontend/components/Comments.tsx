@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api, ApiException } from "@/lib/client-api";
 import type { Comment, Page } from "@/lib/types";
+import { Turnstile } from "./Turnstile";
 import { VerifiedBadge } from "./VerifiedBadge";
 
 export function Comments({ slug }: { slug: string }) {
   const [items, setItems] = useState<Comment[]>([]);
   const [body, setBody] = useState("");
   const [note, setNote] = useState("");
+  const [token, setToken] = useState("");
+  const onToken = useCallback((t: string) => setToken(t), []);
 
   useEffect(() => {
     api<Page<Comment>>(`/stories/${slug}/comments`).then((p) => setItems(p.results)).catch(() => {});
@@ -18,7 +21,7 @@ export function Comments({ slug }: { slug: string }) {
     e.preventDefault();
     setNote("");
     try {
-      const c = await api<Comment>(`/stories/${slug}/comments`, { method: "POST", body: { body } });
+      const c = await api<Comment>(`/stories/${slug}/comments`, { method: "POST", body: { body, turnstile_token: token } });
       setBody("");
       if (c.status === "visible") setItems((xs) => [c, ...xs]);
       else setNote("Thanks! Your comment is waiting for review.");
@@ -34,6 +37,7 @@ export function Comments({ slug }: { slug: string }) {
       <form onSubmit={submit} className="mb-6 flex flex-col gap-2">
         <textarea className="input min-h-24" maxLength={2000} value={body} onChange={(e) => setBody(e.target.value)}
                   placeholder="What did this story make you think?" required />
+        {body.trim() && <Turnstile onToken={onToken} />}
         <div className="flex items-center gap-3">
           <button className="btn btn-primary" disabled={!body.trim()}>Post</button>
           {note && <span className="text-sm text-muted">{note}</span>}

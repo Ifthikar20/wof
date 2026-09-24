@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { api, ApiException } from "@/lib/client-api";
+import { ReportButton } from "./ReportButton";
 
 type Board = { id: string; name: string };
 
-export function StoryActions(props: { slug: string; initialLiked: boolean; likeCount: number; isAuthor: boolean; status: string }) {
+export function StoryActions(props: { slug: string; storyId: string; initialLiked: boolean; likeCount: number; isAuthor: boolean; status: string }) {
   const [liked, setLiked] = useState(props.initialLiked);
   const [count, setCount] = useState(props.likeCount);
   const [message, setMessage] = useState("");
@@ -62,6 +63,9 @@ export function StoryActions(props: { slug: string; initialLiked: boolean; likeC
         </>
       )}
       {message && <span className="text-sm text-muted">{message}</span>}
+      {props.status === "published" && !props.isAuthor && (
+        <div className="ml-auto"><ReportButton targetType="story" targetId={props.storyId} /></div>
+      )}
     </div>
   );
 }

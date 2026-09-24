@@ -63,6 +63,7 @@ class StoryDetailSerializer(StoryCardSerializer):
 
     class Meta(StoryCardSerializer.Meta):
         fields = StoryCardSerializer.Meta.fields + [
+            "id",
             "body_html",
             "status",
             "revision_number",

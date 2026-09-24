@@ -1,10 +1,10 @@
 from django.conf import settings
-from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
 
 from apps.audit import services as audit
 from apps.common.hashing import new_token, sha256_hex
+from apps.common.tasks import send_email_task
 
 from .models import Company, FounderProfile, VerificationRequest
 
@@ -19,15 +19,14 @@ def send_work_email_token(req: VerificationRequest) -> None:
     req.email_token_expires_at = timezone.now() + settings.VERIFICATION_TOKEN_TTL
     req.save(update_fields=["email_token_hash", "email_token_expires_at"])
     link = f"{settings.SITE_URL}/verify/confirm?token={raw}"
-    send_mail(
+    send_email_task.delay(
         subject="Confirm your work email - Wall of Founders",
-        message=(
+        body=(
             f"Someone (hopefully you) asked to verify {req.work_email} as a founder of "
             f"{req.company_name} on Wall of Founders.\n\nConfirm within 24 hours:\n{link}\n\n"
             "If this wasn't you, ignore this email - nothing will happen."
         ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[req.work_email],
+        to=req.work_email,
     )
 
 

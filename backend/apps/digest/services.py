@@ -2,13 +2,14 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives, get_connection, send_mail
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.db import IntegrityError, transaction
 from django.db.models import Max
 from django.template.loader import render_to_string
 from django.utils import timezone
 
 from apps.audit import services as audit
+from apps.common.tasks import send_email_task
 
 from . import curation, tokens
 from .models import DigestDelivery, DigestIssue, DigestItem, Subscription
@@ -31,12 +32,12 @@ def subscribe(email: str, user=None) -> None:
     sub.confirmation_sent_at = now
     sub.save(update_fields=["status", "confirmation_sent_at"])
     link = f"{settings.SITE_URL}/digest/confirm?token={tokens.make_confirm_token(sub.id)}"
-    send_mail(
-        "Confirm your Wall of Founders digest subscription",
-        f"Tap to start receiving one founder-story digest a week:\n{link}\n\n"
+    send_email_task.delay(
+        subject="Confirm your Wall of Founders digest subscription",
+        body=f"Tap to start receiving one founder-story digest a week:\n{link}\n\n"
         "Didn't ask for this? Ignore this email and you won't hear from us.",
-        settings.DIGEST_FROM_EMAIL,
-        [email],
+        to=email,
+        from_email=settings.DIGEST_FROM_EMAIL,
     )
 
 
