@@ -45,7 +45,7 @@ export default async function StoryPage({ params }: Props) {
             </Link>
           ))}
         </div>
-        <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight md:text-5xl">{story.title}</h1>
+        <h1 className="font-serif text-4xl leading-tight tracking-tight md:text-5xl">{story.title}</h1>
         {story.dek && <p className="mt-3 text-xl text-muted">{story.dek}</p>}
         <Link href={`/f/${author.handle}`} className="mt-6 flex items-center gap-3">
           <span className="grid h-11 w-11 place-items-center rounded-full bg-line font-bold">

@@ -26,7 +26,7 @@ export function StoryCard({ story }: { story: Story }) {
 
   return (
     <article className="pin">
-      <div className="relative overflow-hidden rounded-2xl">
+      <div className="pin-frame relative overflow-hidden rounded-[20px]">
         <Link href={`/s/${story.slug}`} aria-label={story.title} className="block focus-visible:outline-2 focus-visible:outline-accent">
           {cover ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -47,8 +47,8 @@ export function StoryCard({ story }: { story: Story }) {
                 minHeight: HEIGHTS[(h >>> 3) % HEIGHTS.length],
               }}
             >
-              <span aria-hidden className="font-serif text-5xl leading-none text-ink/25">“</span>
-              <h2 className="font-serif text-[1.35rem] font-bold leading-snug text-ink">{story.title}</h2>
+              <span aria-hidden className="font-serif text-6xl leading-none text-ink/20">“</span>
+              <h2 className="font-serif text-[1.75rem] leading-[1.08] tracking-tight text-ink">{story.title}</h2>
             </div>
           )}
         </Link>
@@ -74,7 +74,7 @@ export function StoryCard({ story }: { story: Story }) {
           </Link>
         )}
         <Link href={`/f/${author.handle}`} className="mt-1.5 flex min-w-0 items-center gap-1.5 text-[13px]">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-chip text-[11px] font-bold">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink text-[11px] font-bold text-bg">
             {(author.display_name || author.handle).slice(0, 1).toUpperCase()}
           </span>
           <span className="truncate">{author.display_name || author.handle}</span>

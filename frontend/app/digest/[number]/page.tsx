@@ -14,7 +14,7 @@ export default async function IssuePage({ params }: { params: Promise<{ number: 
     <>
       <header className="mx-auto mb-8 max-w-2xl text-center">
         <p className="text-xs font-semibold uppercase tracking-[.16em] text-accent">Issue #{issue.number} · week of {issue.week_of}</p>
-        <h1 className="mt-2 font-serif text-3xl font-bold">{issue.subject}</h1>
+        <h1 className="mt-2 font-serif text-3xl">{issue.subject}</h1>
         {issue.intro && <p className="mt-3 text-muted">{issue.intro}</p>}
       </header>
       <Wall initial={{ next: null, previous: null, results: issue.stories }} />

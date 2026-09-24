@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { isBot, isExemptPath, loadState, nextPrompt, saveState } from "@/lib/auth-prompt";
+import { LoginForm } from "./LoginForm";
+import { LogoMark } from "./Logo";
 import { useMe } from "./SessionProvider";
 
 /**
@@ -31,7 +33,7 @@ export function AuthPrompt() {
   useEffect(() => {
     if (!mode) return;
     const dialog = dialogRef.current;
-    dialog?.querySelector<HTMLElement>("a,button")?.focus();
+    (dialog?.querySelector<HTMLElement>("input") ?? dialog?.querySelector<HTMLElement>("a,button"))?.focus();
     const background = [document.querySelector("main"), document.querySelector("header")];
     if (mode === "firm") {
       document.body.style.overflow = "hidden";
@@ -40,7 +42,7 @@ export function AuthPrompt() {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape" && mode === "soft") dismiss();
       if (e.key === "Tab" && dialog) {
-        const items = [...dialog.querySelectorAll<HTMLElement>("a,button")];
+        const items = [...dialog.querySelectorAll<HTMLElement>("a[href],button,input")];
         const first = items[0];
         const last = items[items.length - 1];
         if (e.shiftKey && document.activeElement === first) {
@@ -71,7 +73,7 @@ export function AuthPrompt() {
 
   return (
     <div
-      className={`fixed inset-0 z-50 grid place-items-center p-4 ${mode === "firm" ? "bg-black/60 backdrop-blur-md" : "bg-black/40"}`}
+      className={`fixed inset-0 z-50 grid place-items-center overflow-y-auto p-4 ${mode === "firm" ? "bg-black/55 backdrop-blur-md" : "bg-black/45 backdrop-blur-[2px]"}`}
       onClick={mode === "soft" ? dismiss : undefined}
     >
       <div
@@ -80,33 +82,32 @@ export function AuthPrompt() {
         aria-modal="true"
         aria-labelledby="auth-prompt-title"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-md rounded-3xl bg-surface px-8 pb-8 pt-10 text-center shadow-2xl"
+        className="relative w-full max-w-[440px] rounded-[32px] bg-surface p-8 shadow-[0_40px_120px_-30px_rgba(0,0,0,.6)] sm:p-10"
       >
         {mode === "soft" && (
-          <button aria-label="Close" onClick={dismiss} className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full hover:bg-chip">
-            ✕
+          <button aria-label="Close" onClick={dismiss} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full text-muted hover:bg-chip hover:text-ink">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden><path d="M6 6l12 12M18 6 6 18" /></svg>
           </button>
         )}
-        <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-accent text-lg font-bold text-accent-ink">W</span>
-        <h2 id="auth-prompt-title" className="mt-4 font-serif text-3xl font-bold leading-tight">
-          {mode === "firm" ? "Join to keep reading" : "See every founder story. Join the Wall."}
+        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-chip">
+          <LogoMark className="h-8 w-8" />
+        </span>
+        <h2 id="auth-prompt-title" className="mt-5 font-serif text-[2.6rem] leading-[1.02]">
+          {mode === "firm" ? "Keep reading with a free account" : "Welcome to Wall of Founders"}
         </h2>
-        <p className="mt-2 text-muted">
-          Free for readers. Founders get verified and tell their own story.
-        </p>
-        <div className="mt-6 flex flex-col gap-3">
-          <Link href={`/signup?next=${next}`} className="rounded-full bg-save px-5 py-3 font-bold text-white hover:brightness-90">
-            Join as a reader
-          </Link>
-          <Link href="/signup?intent=founder&next=%2Fverify" className="rounded-full bg-chip px-5 py-3 font-bold hover:brightness-95">
-            I&apos;m a founder
-          </Link>
+        <p className="mb-6 mt-2 text-muted">Log in to save stories and follow the founders behind them.</p>
+
+        <LoginForm onSuccess={() => window.location.reload()} />
+
+        <div className="my-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[.14em] text-muted">
+          <span className="h-px flex-1 bg-line" />or<span className="h-px flex-1 bg-line" />
         </div>
-        <p className="mt-5 text-sm text-muted">
-          Already a member?{" "}
-          <Link href={`/login?next=${next}`} className="font-semibold text-ink underline">
-            Log in
-          </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link href={`/signup?next=${next}`} className="btn btn-outline h-12">Join as a reader</Link>
+          <Link href="/signup?intent=founder&next=%2Fverify" className="btn btn-outline h-12">I&apos;m a founder</Link>
+        </div>
+        <p className="mt-6 text-center text-xs text-muted">
+          Free for readers. Founders are verified by a person before they can publish.
         </p>
       </div>
     </div>

@@ -18,7 +18,7 @@ export function HeaderNav() {
           <Link
             key={href}
             href={href}
-            className={`rounded-full px-4 py-3 text-[15px] font-semibold ${active ? "bg-ink text-bg" : "hover:bg-chip"}`}
+            className={`rounded-full px-4 py-2.5 text-[14px] font-semibold transition-colors ${active ? "bg-ink text-bg" : "hover:bg-chip"}`}
           >
             {label}
           </Link>

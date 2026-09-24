@@ -21,6 +21,28 @@ What we do differently, on purpose:
 | Engagement-ranked home feed | Chronological wall + topic filters + search; ranking only in the digest | Transparent and explainable |
 | Anyone can pin | Only verified founders publish; everyone can save | Trust |
 
+## Visual language
+- **Type:** *Instrument Serif* for display titles (one weight, set large and tight) and
+  *Inter* (variable) for interface text. Both are self-hosted from npm (`@fontsource`),
+  so there are no third-party font requests and the CSP stays `'self'`.
+- **Colour:** calm paper tones, **ink-black** primary actions, one warm accent (`--accent`,
+  terracotta), and Pinterest red kept only for **Save**.
+- **Smooth background:** `.ambient` is a fixed layer of three large, heavily blurred colour
+  fields drifting over 40–50 s, plus faint film grain. It is static when the user prefers
+  reduced motion.
+- **Glass:** the header and sticky topic bar are frosted (`.glass`, backdrop blur).
+- **Full-frame imagery:** the home page opens with a full-bleed **hero** showing the
+  editor's featured story (`/stories?featured=1`) over its cover photo, or over our own
+  artwork. The digest page and the split-screen log-in and sign-up pages use full-frame
+  artwork too.
+- **Artwork:** `public/art/*.webp` are original illustrations (a skyline of rounded tiles
+  at dusk, night and morning, with film grain), rendered from code for this project. No
+  stock or AI imagery. Replace them with real photography whenever it's available.
+- **Logo:** a tiny masonry wall: three columns of staggered rounded tiles, with one tile
+  in the accent colour (the pinned story). `components/Logo.tsx`, `app/icon.svg`.
+- **CSS layering:** component classes (`.btn`, `.chip`, `.input`, `.wall`…) live in
+  `@layer components`, so Tailwind utilities such as `hidden sm:inline-flex` can override them.
+
 ## Pages (implemented)
 | Route | Rendering | Purpose |
 |---|---|---|

@@ -29,7 +29,7 @@ export default async function FounderPage({ params }: Props) {
         <div className="grid h-24 w-24 place-items-center rounded-full bg-line text-3xl font-bold">
           {(founder.display_name || founder.handle).slice(0, 1).toUpperCase()}
         </div>
-        <h1 className="mt-4 flex items-center gap-2 font-serif text-3xl font-bold">
+        <h1 className="mt-4 flex items-center gap-2 font-serif text-3xl">
           {founder.display_name || founder.handle} {founder.is_verified_founder && <VerifiedBadge className="h-6 w-6" />}
         </h1>
         <p className="text-muted">@{founder.handle}</p>

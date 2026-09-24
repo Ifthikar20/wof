@@ -69,6 +69,9 @@ class FeedView(PublicCacheMixin, generics.ListCreateAPIView):
             qs = qs.filter(tags__slug=tag[:40])
         if author := self.request.query_params.get("author"):
             qs = qs.filter(author__handle=author[:30])
+        if self.request.query_params.get("featured") == "1":
+            # Editor picks (for the home hero); cursor pagination keeps newest-first order.
+            qs = qs.filter(featured_at__isnull=False)
         if q := self.request.query_params.get("q", "").strip()[:80]:
             # Simple substring search; same throttle + cursor pagination as the feed, so it
             # adds no cheaper way to enumerate the corpus. Tag match via subquery avoids

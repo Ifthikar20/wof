@@ -6,6 +6,7 @@ import "./globals.css";
 import { AuthPrompt } from "@/components/AuthPrompt";
 import { HeaderActions } from "@/components/HeaderActions";
 import { HeaderNav } from "@/components/HeaderNav";
+import { Logo } from "@/components/Logo";
 import { SearchBar } from "@/components/SearchBar";
 import { SessionProvider } from "@/components/SessionProvider";
 
@@ -23,20 +24,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className="min-h-screen">
         <SessionProvider>
-        <header className="sticky top-0 z-20 bg-bg">
-          <div className="mx-auto flex max-w-[1880px] items-center gap-2 px-4 py-2">
-            <Link href="/" aria-label="Wall of Founders home" className="grid h-12 w-12 shrink-0 place-items-center rounded-full hover:bg-chip">
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-accent text-sm font-bold text-accent-ink">W</span>
+        <div className="ambient" aria-hidden><span /><span /><span /></div>
+        <header className="glass sticky top-0 z-20 border-b border-line/60">
+          <div className="mx-auto flex max-w-[1880px] items-center gap-3 px-4 py-2.5 sm:px-6">
+            <Link href="/" aria-label="Wall of Founders home" className="shrink-0 rounded-full pr-2">
+              <span className="hidden lg:inline"><Logo /></span>
+              <span className="lg:hidden"><Logo withWordmark={false} /></span>
             </Link>
             <HeaderNav />
-            <Suspense fallback={<div className="h-12 flex-1 rounded-full bg-chip" />}>
+            <Suspense fallback={<div className="h-11 flex-1 rounded-full bg-chip" />}>
               <SearchBar />
             </Suspense>
             <HeaderActions />
           </div>
         </header>
-        <main className="mx-auto max-w-[1880px] px-4 pb-6 pt-2">{children}</main>
-        <footer className="mx-auto max-w-[1880px] px-4 py-10 text-center text-sm text-muted">
+        <main className="mx-auto max-w-[1880px] px-4 pb-6 pt-4 sm:px-6">{children}</main>
+        <footer className="mx-auto flex max-w-[1880px] flex-col items-center gap-3 px-4 py-14 text-center text-sm text-muted">
+          <Logo withWordmark={false} />
           Every story is written by a founder we verified by hand. Every edit is versioned and publicly hashed.
         </footer>
         <AuthPrompt />

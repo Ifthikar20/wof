@@ -28,7 +28,7 @@ export default function BoardsPage() {
     <div className="flex flex-col gap-10">
       {boards.map((b) => (
         <section key={b.id}>
-          <h2 className="mb-4 font-serif text-2xl font-bold">{b.name} <span className="text-base font-normal text-muted">· {b.save_count}</span></h2>
+          <h2 className="mb-4 font-serif text-2xl">{b.name} <span className="text-base font-normal text-muted">· {b.save_count}</span></h2>
           <div className="wall">{b.stories?.map((s) => <StoryCard key={s.slug} story={s} />)}</div>
         </section>
       ))}

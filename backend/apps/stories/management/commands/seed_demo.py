@@ -135,6 +135,17 @@ class Command(BaseCommand):
                 story.save()
                 story.tags.set(rng.sample(tags, k=rng.randint(1, 3)))
 
+            # Feature the most-saved story so the home hero has an editor pick.
+            if not Story.objects.filter(featured_at__isnull=False).exists():
+                top = (
+                    Story.objects.filter(status=Story.Status.PUBLISHED)
+                    .order_by("-save_count")
+                    .first()
+                )
+                if top:
+                    top.featured_at = now
+                    top.save(update_fields=["featured_at"])
+
             if not User.objects.filter(email="admin@wof.local").exists():
                 User.objects.create_superuser(
                     "admin@wof.local", "admin-demo-password", handle="wofadmin"

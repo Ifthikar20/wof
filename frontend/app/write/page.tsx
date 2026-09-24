@@ -33,7 +33,7 @@ export default function WritePage() {
   if (me && !me.is_verified_founder) {
     return (
       <div className="mx-auto max-w-lg py-16 text-center">
-        <h1 className="font-serif text-2xl font-bold">Only verified founders can publish</h1>
+        <h1 className="font-serif text-2xl">Only verified founders can publish</h1>
         <p className="mt-2 text-muted">It keeps the Wall trustworthy. Verification takes a couple of minutes to submit.</p>
         <a href="/verify" className="btn btn-primary mt-6">Verify that you&apos;re a founder</a>
       </div>
@@ -44,7 +44,7 @@ export default function WritePage() {
     // Publishing requires 2FA (REQUIRE_2FA_FOR_FOUNDERS); surface that up front.
     return (
       <div className="mx-auto max-w-lg py-16 text-center">
-        <h1 className="font-serif text-2xl font-bold">One more step: turn on 2FA</h1>
+        <h1 className="font-serif text-2xl">One more step: turn on 2FA</h1>
         <p className="mt-2 text-muted">Founder accounts need two-factor authentication so nobody can publish in your name.</p>
         <a href="/settings/security" className="btn btn-primary mt-6">Set up two-factor authentication</a>
       </div>
@@ -70,7 +70,7 @@ export default function WritePage() {
 
   return (
     <form onSubmit={save} className="mx-auto flex max-w-2xl flex-col gap-5">
-      <h1 className="font-serif text-3xl font-bold">{slug ? "Edit your story" : "Tell your story"}</h1>
+      <h1 className="font-serif text-3xl">{slug ? "Edit your story" : "Tell your story"}</h1>
       {saved && <p className="text-sm text-muted">{saved}</p>}
       <Field label="Title" error={errors.title}><input className="input text-lg" maxLength={140} required value={form.title} onChange={set("title")} /></Field>
       <Field label="Subtitle" error={errors.dek} hint="One sentence that makes people want to read."><input className="input" maxLength={280} value={form.dek} onChange={set("dek")} /></Field>

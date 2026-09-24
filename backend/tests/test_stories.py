@@ -157,3 +157,16 @@ def test_search_by_title_dek_and_tag(client, founder):
     assert search("EMPTY") == {b}
     assert search("burn") == {b}  # tag name, no duplicate rows
     assert search("   ") == {a, b, c}  # blank query means no filter
+
+
+def test_featured_filter_returns_only_editor_picks(client, founder):
+    from django.utils import timezone
+
+    auth(client, founder)
+    picked = create(client, title="Editor pick").json()["slug"]
+    other = create(client, title="Regular").json()["slug"]
+    for slug in (picked, other):
+        client.post(f"/api/v1/stories/{slug}/publish")
+    Story.objects.filter(slug=picked).update(featured_at=timezone.now())
+    res = type(client)().get("/api/v1/stories", {"featured": "1"}).json()["results"]
+    assert [s["slug"] for s in res] == [picked]

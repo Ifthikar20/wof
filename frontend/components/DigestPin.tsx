@@ -37,7 +37,7 @@ export function DigestPin() {
         ✕
       </button>
       <span className="text-xs font-semibold uppercase tracking-[.16em] text-bg/60">The weekly digest</span>
-      <p className="font-serif text-2xl font-bold leading-snug">The best founder stories, in your inbox every week.</p>
+      <p className="font-serif text-2xl leading-snug">The best founder stories, in your inbox every week.</p>
       <p className="text-sm text-bg/70">No ads. No tracking pixels. One-click unsubscribe.</p>
       <Link href="/digest" className="mt-auto self-start rounded-full bg-save px-4 py-2.5 text-sm font-bold text-white">
         Subscribe

@@ -69,6 +69,10 @@ Everything is visible on landing. After a while, logged-out visitors are invited
 2. **Firm prompt** 90 seconds after closing the soft one. There's no close button, the
    page behind is blurred and can't be scrolled or clicked, and the only ways forward are
    **Join as a reader**, **I'm a founder** or **Log in**.
+
+Both prompts include the **log-in form inline** (email, password with a show/hide toggle, and
+the 2FA code step when needed), so members can sign in without leaving the page they're on.
+The same `LoginForm` component powers `/login`.
 3. **Never shown** on the log-in, sign-up, verification, settings or email-link pages (so
    nobody gets trapped), to logged-in users, or to search-engine crawlers and link-preview bots.
 
