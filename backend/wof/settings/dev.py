@@ -30,3 +30,12 @@ if env("USE_SQLITE", ""):
 # read-only source mount used by docker compose).
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = True
+
+# Local load testing: scale every throttle (e.g. DEV_THROTTLE_SCALE=20 when many automated
+# browsers share one IP). Dev only; production rates are fixed in base.py.
+if _scale := env("DEV_THROTTLE_SCALE", ""):
+    _factor = max(1, int(_scale))
+    REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {  # noqa: F405
+        scope: f"{int(rate.split('/')[0]) * _factor}/{rate.split('/')[1]}"
+        for scope, rate in REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"].items()  # noqa: F405
+    }

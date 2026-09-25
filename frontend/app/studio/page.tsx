@@ -37,7 +37,7 @@ export default function StudioPage() {
   }, [me, load]);
 
   if (!me) return null;
-  if (!me.is_verified_founder || !me.totp_enabled) return <FounderGate me={me} />;
+  if (!me.can_publish) return <FounderGate me={me} />;
 
   const all = stories ?? [];
   const shown = tab === "all" ? all : all.filter((s) => s.status === tab);

@@ -34,12 +34,13 @@ export function Wall({ initial, promo, emptyText = "No stories here yet." }: { i
   return (
     <>
       <div className="wall">
-        {stories.map((s, i) => (
-          <Fragment key={s.slug}>
-            <StoryCard story={s} />
-            {promo && i === Math.min(PROMO_AFTER, stories.length) - 1 && promo}
-          </Fragment>
-        ))}
+        {stories.flatMap((s, i) => {
+          const items = [<StoryCard key={s.slug} story={s} />];
+          if (promo && i === Math.min(PROMO_AFTER, stories.length) - 1) {
+            items.push(<Fragment key="promo">{promo}</Fragment>); // keyed slot for the promoted pin
+          }
+          return items;
+        })}
       </div>
       {next && (
         <div className="flex justify-center py-8">

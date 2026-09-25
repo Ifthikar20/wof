@@ -94,11 +94,22 @@ compare the head hash with the anchored value to prove the restored data wasn't 
 | Scale (10M MAU) | Autoscaling, larger RDS + replicas, search cluster | ~$8–15k |
 
 ## Local development
+Two ways to run everything on a laptop:
+
+| | `make dev` (no Docker) | `make up` (Docker) |
+|---|---|---|
+| Needs | Python 3.11+, Node 20+ | Docker |
+| Database | SQLite (WAL) in `backend/.local/` | PostgreSQL 16 |
+| Cache / sessions | in-memory / database | Redis |
+| Background jobs | run inline in the request | Celery worker + beat |
+| Email | files in `backend/.local/mail/` | Mailpit at http://localhost:8025 |
+| Images | `backend/.local/media/`, served by Django (`wof.settings.local`) | MinIO (S3 API) |
+| Scheduled jobs | `make dev-periodic` | beat |
+
+Both run the same application code, security checks and tests. The no-Docker mode swaps only
+the infrastructure (`backend/wof/settings/local.py`, `backend/apps/stories/storage.py`).
+
 ```bash
-cp .env.example .env
-make up          # postgres, redis, minio, mailpit, backend, worker, beat, frontend
-make seed        # demo founders + stories
-open http://localhost:3000      # the wall
-open http://localhost:8025      # Mailpit (verification + digest emails)
-open http://localhost:8000/admin/  # moderation console
+make dev                           # http://localhost:3000, API on :8000, admin at :8000/admin/
+make up && make seed               # the Docker stack, then demo data
 ```

@@ -1,6 +1,14 @@
-.PHONY: up down logs migrate seed superuser test lint fmt audit-chain
+.PHONY: dev dev-reset dev-periodic up down logs migrate seed superuser test lint fmt audit-chain
 
-up:            ## start the whole stack
+dev:           ## run everything locally with just Python + Node (no Docker)
+	./scripts/dev.sh
+dev-reset:     ## same, starting from a fresh database
+	./scripts/dev.sh --reset
+dev-periodic:  ## run the scheduled jobs once (digest, expiry, audit check) in local mode
+	cd backend && DJANGO_SETTINGS_MODULE=wof.settings.local .venv/bin/python manage.py run_periodic
+
+up:            ## start the whole stack in Docker
+	@test -f .env || cp .env.example .env
 	docker compose up -d --build
 down:
 	docker compose down

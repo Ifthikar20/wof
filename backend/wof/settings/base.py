@@ -227,6 +227,8 @@ EMAIL_PORT = int(env("EMAIL_PORT", "1025"))
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", False)
+# Only used when EMAIL_BACKEND is the file-based backend (local development).
+EMAIL_FILE_PATH = env("EMAIL_FILE_PATH", str(BASE_DIR / ".local" / "mail"))
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "Wall of Founders <hello@walloffounders.local>")
 DIGEST_FROM_EMAIL = env(
     "DIGEST_FROM_EMAIL", "Wall of Founders Digest <digest@walloffounders.local>"

@@ -49,7 +49,7 @@ export default function WritePage() {
   }, [form.title]);
 
   if (!me) return null;
-  if (!me.is_verified_founder || !me.totp_enabled) return <FounderGate me={me} />;
+  if (!me.can_publish) return <FounderGate me={me} />;
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm({ ...form, [k]: e.target.value });
   const words = form.body_markdown.trim() ? form.body_markdown.trim().split(/\s+/).length : 0;

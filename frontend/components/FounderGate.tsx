@@ -3,7 +3,7 @@ import type { Me } from "@/lib/types";
 
 /** Explains why a founder-only screen isn't available yet, with the one next step. */
 export function FounderGate({ me }: { me: Me }) {
-  const needs2fa = me.is_verified_founder && !me.totp_enabled;
+  const needs2fa = me.needs_2fa;
   return (
     <div className="mx-auto max-w-lg py-20 text-center">
       <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-chip text-3xl" aria-hidden>{needs2fa ? "🔐" : "✍️"}</span>

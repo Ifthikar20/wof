@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Django is reachable only on the private network. The browser talks to one origin, and
+// /api/* (plus /local-media/* in no-Docker mode) is proxied here at request time, so the
+// same image works in docker compose (http://backend:8000), ECS (http://api.wof.internal:8000)
+// and local dev. (A next.config rewrite would bake the target in at build time.)
+const API_INTERNAL_URL = process.env.API_INTERNAL_URL ?? "http://127.0.0.1:8000";
+
 /**
- * Per-request nonce-based Content-Security-Policy for HTML pages.
- * No 'unsafe-inline' scripts: even if sanitised story HTML were somehow bypassed,
- * injected <script> tags would not execute.
+ * 1. Proxy API and local-media requests to Django (runtime-configured).
+ * 2. Per-request nonce-based Content-Security-Policy for HTML pages.
+ *    No 'unsafe-inline' scripts: even if sanitised story HTML were somehow bypassed,
+ *    injected <script> tags would not execute.
  */
 export function middleware(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+  if (pathname.startsWith("/api/") || pathname.startsWith("/local-media/")) {
+    return NextResponse.rewrite(new URL(pathname + search, API_INTERNAL_URL));
+  }
+
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV !== "production";
   const mediaHost = process.env.NEXT_PUBLIC_MEDIA_HOST ?? "";
@@ -40,9 +52,11 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // HTML routes only: skip the API proxy, static assets and prefetches.
+    "/api/:path*",
+    "/local-media/:path*",
+    // HTML routes: skip static assets and prefetches.
     {
-      source: "/((?!api|_next/static|_next/image|favicon.ico|icon.svg).*)",
+      source: "/((?!api|local-media|_next/static|_next/image|favicon.ico|icon.svg).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },

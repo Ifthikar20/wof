@@ -133,3 +133,21 @@ def test_no_api_route_ends_with_a_slash():
     api_routes = [r for r in walk(get_resolver().url_patterns) if r.startswith("api/")]
     assert api_routes
     assert [r for r in api_routes if r.endswith("/")] == []
+
+
+def test_me_reports_whether_the_server_lets_the_founder_publish(client, founder, settings):
+    from .conftest import auth
+
+    auth(client, founder)
+    settings.REQUIRE_2FA_FOR_FOUNDERS = False
+    me = client.get("/api/v1/auth/me").json()
+    assert me["can_publish"] is True and me["needs_2fa"] is False
+    settings.REQUIRE_2FA_FOR_FOUNDERS = True
+    me = client.get("/api/v1/auth/me").json()
+    assert me["can_publish"] is False and me["needs_2fa"] is True
+    assert (
+        client.post(
+            "/api/v1/stories", {"title": "x", "body_markdown": "y"}, format="json"
+        ).status_code
+        == 403
+    )

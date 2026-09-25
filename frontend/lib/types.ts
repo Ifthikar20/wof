@@ -50,6 +50,10 @@ export type Me = {
   email_verified: boolean;
   totp_enabled: boolean;
   founder_status: string;
+  /** Server-side: verified founder, and 2FA is on if the server requires it. */
+  can_publish: boolean;
+  /** The server requires 2FA before this founder can publish. */
+  needs_2fa: boolean;
 };
 
 export type Founder = {

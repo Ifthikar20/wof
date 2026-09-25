@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import password_validation
 from rest_framework import serializers
 
@@ -26,10 +27,23 @@ class MeSerializer(PublicUserSerializer):
             "email_verified",
             "totp_enabled",
             "founder_status",
+            "can_publish",
+            "needs_2fa",
         ]
         read_only_fields = ["email", "role", "email_verified", "totp_enabled"]
 
     founder_status = serializers.SerializerMethodField()
+    can_publish = serializers.SerializerMethodField()
+    needs_2fa = serializers.SerializerMethodField()
+
+    def get_needs_2fa(self, obj):
+        """Whether the server will refuse to publish until 2FA is on (REQUIRE_2FA_FOR_FOUNDERS)."""
+        return bool(
+            obj.is_verified_founder and settings.REQUIRE_2FA_FOR_FOUNDERS and not obj.totp_enabled
+        )
+
+    def get_can_publish(self, obj):
+        return bool(obj.is_verified_founder and not self.get_needs_2fa(obj))
 
     def get_founder_status(self, obj):
         profile = getattr(obj, "founder_profile", None)

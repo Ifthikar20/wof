@@ -64,10 +64,24 @@ infra/              Postgres roles, MinIO bootstrap
 docs/               architecture docs + ADRs
 ```
 
-## Quick start (Docker)
+## Quick start
+
+### Option A: no Docker (Python 3.11+ and Node 20+)
 
 ```bash
-cp .env.example .env
+make dev                # or: ./scripts/dev.sh
+```
+
+That's the whole setup. The script creates a virtualenv, installs everything, applies
+migrations, loads demo data on the first run, and starts the API (port 8000) and the web
+app (port 3000) with hot reload. It uses SQLite, an in-memory cache and inline background
+jobs; emails are saved to `backend/.local/mail/` and images to `backend/.local/media/`.
+`make dev-reset` starts over from an empty database; `make dev-periodic` runs the scheduled
+jobs (digest, verification expiry, audit check) once.
+
+### Option B: Docker (the production-like stack)
+
+```bash
 make up                 # postgres, redis, minio, mailpit, api, worker, beat, web
 make seed               # demo founders + stories (DEBUG only)
 ```
@@ -76,7 +90,7 @@ make seed               # demo founders + stories (DEBUG only)
 |---|---|
 | http://localhost:3000 | The wall |
 | http://localhost:8000/admin/ | Moderation console (`admin@wof.local` / `admin-demo-password`, local only) |
-| http://localhost:8025 | Mailpit: verification and digest emails land here |
+| http://localhost:8025 | Mailpit (Docker stack): verification and digest emails land here |
 
 Demo founder logins: `maya@solarloop.energy` / `demo-password-please-change` (see
 `seed_demo.py` for the rest).

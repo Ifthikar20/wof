@@ -45,3 +45,12 @@ urlpatterns = [
     path("api/v1/", include(api_v1)),
     path(settings.ADMIN_URL, admin.site.urls),
 ]
+
+if getattr(settings, "LOCAL_MEDIA_ROOT", "") and settings.DEBUG:
+    # No-Docker local mode: Django stands in for object storage (see apps/stories/local_media.py).
+    from apps.stories import local_media
+
+    urlpatterns += [
+        path("api/v1/media/local-upload", local_media.local_upload),
+        path("local-media/<path:key>", local_media.local_media),
+    ]

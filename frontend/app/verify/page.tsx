@@ -59,7 +59,7 @@ export default function VerifyPage() {
   }
 
   const verified = !!me?.is_verified_founder;
-  const state = stepState(current?.status, verified, !!me?.totp_enabled);
+  const state = stepState(current?.status, verified, !!me?.can_publish);
   const showForm = !verified && current !== undefined && (!current || ["rejected", "needs_info"].includes(current.status));
   const copy = verified ? STATUS_COPY.approved : current ? STATUS_COPY[current.status] : undefined;
 
@@ -96,8 +96,8 @@ export default function VerifyPage() {
             <p className="mt-1 text-muted">{copy.body}</p>
             {current?.decision_reason && <p className="mt-3 rounded-xl bg-chip px-3 py-2 text-sm">Moderator note: {current.decision_reason}</p>}
             {verified && (
-              <Link href={me?.totp_enabled ? "/write" : "/settings/security"} className="btn btn-primary mt-5">
-                {me?.totp_enabled ? "Write your first story" : "Turn on 2FA"}
+              <Link href={me?.can_publish ? "/write" : "/settings/security"} className="btn btn-primary mt-5">
+                {me?.can_publish ? "Write your first story" : "Turn on 2FA"}
               </Link>
             )}
           </div>
